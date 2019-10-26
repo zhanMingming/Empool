@@ -2,7 +2,7 @@
 #define ZHANMM_TASK_QUEUE_H_
 
 #include "TaskQueueBase.h"
-#include "BlockQueue.h"
+#include "BlockingQueue.h"
 #include "ConditionVariable.h"
 #include <queue>
 #include <boost/lockfree/queue.hpp>
@@ -10,14 +10,14 @@
 
 namespace zhanmm {
 
-class TaskQueue : public TaskQueueBase {
+class BlockingTaskQueue : public TaskQueueBase {
 public:
 
-    TaskQueue() {}
+    BlockingTaskQueue() {}
     virtual void Push(boost::shared_ptr<TaskBase> task);
     virtual boost::shared_ptr<TaskBase> Pop();
     virtual size_t Size() const;
-    virtual ~TaskQueue() {}
+    virtual ~BlockingTaskQueue() {}
 private:
     BlockingQueue<boost::shared_ptr<TaskBase> > m_tasks;
     //boost::lockfree::queue<boost::shared_ptr<TaskBase> > m_tasks;

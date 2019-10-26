@@ -52,6 +52,13 @@ CloseableThread::~CloseableThread()
 {
 }
 
+
+void CloseableThread::AsyncClose() 
+{
+    m_isRequestClose.store(true);
+}
+
+
 void CloseableThread::Close()
 {
     m_isRequestClose.store(true);

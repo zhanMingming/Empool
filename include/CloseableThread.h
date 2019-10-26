@@ -25,6 +25,7 @@ public:
     ~CloseableThread();
 
     void Close();
+    void AsyncClose();
     bool IsRequestClose() const;
 
 protected:
