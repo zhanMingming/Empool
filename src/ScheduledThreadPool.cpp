@@ -210,14 +210,14 @@ void ScheduledThreadPool::DoSetState(const State state)
 }
 
 
-inline boost::shared_ptr<TimerTask> ScheduledThreadPool::AddCronTimerTask(boost::shared_ptr<TimerTask> task,
+boost::shared_ptr<TimerTask> ScheduledThreadPool::AddCronTimerTask(boost::shared_ptr<TimerTask> task,
   TimeValue delay_in_ms)
 {
     return DoAddCronTimerTask(task, delay_in_ms);
 }
 
 
-inline boost::shared_ptr<TimerTask> ScheduledThreadPool::AddCycleTimerTask(boost::shared_ptr<TimerTask> task,
+boost::shared_ptr<TimerTask> ScheduledThreadPool::AddCycleTimerTask(boost::shared_ptr<TimerTask> task,
   TimeValue period_in_ms, bool is_run_now)
 {
     return DoAddCycleTimerTask(task, period_in_ms, is_run_now);
@@ -225,7 +225,7 @@ inline boost::shared_ptr<TimerTask> ScheduledThreadPool::AddCycleTimerTask(boost
 
 
 
-inline boost::shared_ptr<TimerTask> ScheduledThreadPool::DoAddCronTimerTask(boost::shared_ptr<TimerTask> task,
+boost::shared_ptr<TimerTask> ScheduledThreadPool::DoAddCronTimerTask(boost::shared_ptr<TimerTask> task,
   TimeValue delay_in_ms)
 {
     if (m_isRequestShutDown) {
@@ -235,7 +235,7 @@ inline boost::shared_ptr<TimerTask> ScheduledThreadPool::DoAddCronTimerTask(boos
     }
     int  current_index = m_index.fetch_add(1, std::memory_order_relaxed) % GetThreadNum();
     
-    if (m_handlers[current_index]->DoAddCronTimerTask(task, delay_in_ms)) {
+    if (m_handlers[current_index]->AddCronTimerTask(task, delay_in_ms)) {
         return task;
     } else {
         return boost::shared_ptr<TimerTask>();
@@ -244,7 +244,7 @@ inline boost::shared_ptr<TimerTask> ScheduledThreadPool::DoAddCronTimerTask(boos
 }
 
 
-inline boost::shared_ptr<TimerTask> ScheduledThreadPool::DoAddCycleTimerTask(boost::shared_ptr<TimerTask> task,
+boost::shared_ptr<TimerTask> ScheduledThreadPool::DoAddCycleTimerTask(boost::shared_ptr<TimerTask> task,
   TimeValue period_in_ms, bool is_run_now)
 {
     if (m_isRequestShutDown) {

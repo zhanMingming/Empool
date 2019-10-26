@@ -45,7 +45,7 @@ public:
     //void StopAsync();
     void Stop();
 
-public:
+private:
     bool DoAddCronTimerTask(boost::shared_ptr<TimerTask> task, TimeValue delay_in_ms);
     bool DoAddCycleTimerTask(boost::shared_ptr<TimerTask> task, TimeValue interval_in_ms,
             bool is_run_now);

@@ -101,7 +101,7 @@ class ScheduledThreadPool : public boost::noncopyable {
 template<typename Func>
 inline boost::shared_ptr<TimerTask> ScheduledThreadPool::AddCronTimerTask(Func f, TimeValue delay_in_ms)
 {
-    boost::shared_ptr<TimerTask> task(MakeTimerFunctorTask<Func>(f));
+    boost::shared_ptr<TimerTask> task(MakeTimerFunctorTask(f));
     return DoAddCronTimerTask(task, delay_in_ms);
 }
 
@@ -109,7 +109,7 @@ inline boost::shared_ptr<TimerTask> ScheduledThreadPool::AddCronTimerTask(Func f
 template<typename Func>
 inline boost::shared_ptr<TimerTask> ScheduledThreadPool::AddCycleTimerTask(Func f, TimeValue period_in_ms, bool is_run_now)
 {
-    boost::shared_ptr<TimerTask> task(MakeTimerFunctorTask<Func>(f));
+    boost::shared_ptr<TimerTask> task(MakeTimerFunctorTask(f));
     return DoAddCycleTimerTask(task, period_in_ms, is_run_now);
 }
 
