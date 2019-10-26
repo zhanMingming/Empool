@@ -58,8 +58,8 @@ TEST_F(ScheduledThreadPoolTestSuite, test_Construction)
   }
   
   {
-    ScheduledThreadPool threadPool(5);
-    EXPECT_EQ(static_cast<size_t>(5), threadPool.GetThreadNum());
+    ScheduledThreadPool threadPool(2);
+    EXPECT_EQ(static_cast<size_t>(2), threadPool.GetThreadNum());
   }
 }
 
@@ -76,6 +76,83 @@ TEST_F(ScheduledThreadPoolTestSuite, test_AddCronTimerTask)
   }
   ASSERT_EQ(1, counter);
 }
+
+TEST_F(ScheduledThreadPoolTestSuite, test_AddCronTimerTask_multi)
+{
+  //atomic<int> counter(0);
+  {
+    ScheduledThreadPool threadPool(4);
+    threadPool.AddCronTimerTask(boost::shared_ptr<TimerTask>(new TestScheduledThreadPoolTask(counter)), 200);
+    threadPool.AddCronTimerTask(boost::shared_ptr<TimerTask>(new TestScheduledThreadPoolTask(counter)), 200);
+
+    ASSERT_EQ(0, counter);
+    MilliSleep(300);
+    //timerTaskHandler.Stop();
+    ASSERT_EQ(2, counter);
+  }
+  ASSERT_EQ(2, counter);
+}
+
+
+
+TEST_F(ScheduledThreadPoolTestSuite, test_ShutDown)
+{
+  //atomic<int> counter(0);
+  {
+    ScheduledThreadPool threadPool(4);
+    threadPool.AddCronTimerTask(boost::shared_ptr<TimerTask>(new TestScheduledThreadPoolTask(counter)), 200);
+    threadPool.AddCronTimerTask(boost::shared_ptr<TimerTask>(new TestScheduledThreadPoolTask(counter)), 200);
+
+    ASSERT_EQ(0, counter);
+    MilliSleep(300);
+    threadPool.ShutDown();
+    //timerTaskHandler.Stop();
+    ASSERT_EQ(2, counter);
+
+  }
+  ASSERT_EQ(2, counter);
+}
+
+TEST_F(ScheduledThreadPoolTestSuite, test_ShutDown_multi)
+{
+  //atomic<int> counter(0);
+  {
+    ScheduledThreadPool threadPool(4);
+    threadPool.AddCronTimerTask(boost::shared_ptr<TimerTask>(new TestScheduledThreadPoolTask(counter)), 200);
+    threadPool.AddCronTimerTask(boost::shared_ptr<TimerTask>(new TestScheduledThreadPoolTask(counter)), 200);
+
+    ASSERT_EQ(0, counter);
+    MilliSleep(300);
+    threadPool.ShutDown();
+    //timerTaskHandler.Stop();
+    ASSERT_EQ(2, counter);
+    threadPool.ShutDown();
+
+  }
+  ASSERT_EQ(2, counter);
+}
+
+TEST_F(ScheduledThreadPoolTestSuite, test_ShutDown_Task)
+{
+  //atomic<int> counter(0);
+  {
+    ScheduledThreadPool threadPool(4);
+    threadPool.AddCronTimerTask(boost::shared_ptr<TimerTask>(new TestScheduledThreadPoolTask(counter)), 200);
+    threadPool.AddCronTimerTask(boost::shared_ptr<TimerTask>(new TestScheduledThreadPoolTask(counter)), 200);
+    threadPool.ShutDown();
+    ASSERT_EQ(0, counter);
+    MilliSleep(300);
+    //threadPool.ShutDown();
+    //timerTaskHandler.Stop();
+    ASSERT_EQ(0, counter);
+    //threadPool.ShutDown();
+
+  }
+  ASSERT_EQ(0, counter);
+}
+
+
+
 
 /*
 namespace {

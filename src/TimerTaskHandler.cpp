@@ -59,7 +59,8 @@ void TimerTaskHandler::ThreadFunction(const Function& checkFunc)
             while (m_task_queue.IsEmpty())
             {
                 checkFunc();
-                m_task_queue.Wait();
+                std::cout << "thread wait" << std::endl;
+                m_task_queue.TimedWait(MAX_WAIT_TIME_MS_WEHN_QUEUE_IS_EMPTY);
             }
 
             checkFunc();
@@ -141,6 +142,10 @@ bool TimerTaskHandler::DoAddCronTimerTask(boost::shared_ptr<TimerTask> task, Tim
 
 
 
+
+
+
+
 bool TimerTaskHandler::DoAddCycleTimerTask(boost::shared_ptr<TimerTask> task, TimeValue interval_in_ms,
         bool is_run_now)
 {
@@ -185,10 +190,15 @@ bool TimerTaskHandler::DoAddCycleTimerTask(boost::shared_ptr<TimerTask> task, Ti
 void TimerTaskHandler::Stop()
 {
     m_thread->AsyncClose();
+    std::cout << "asyncClose" << std::endl;
     m_task_queue.Notify();
+    std::cout << "Notify" << std::endl;
     m_thread->Close();
+    std::cout << "close" << std::endl;
     MutexLocker lock(m_queue_guard);
+    std::cout << "lock" << std::endl;
     m_task_queue.Clear();
+    std::cout << "clear" << std::endl;
 }
 
 

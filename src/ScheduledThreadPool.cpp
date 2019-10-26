@@ -1,5 +1,5 @@
 #include "ScheduledThreadPool.h"
-
+#include <iostream>
 
 namespace zhanmm {
 
@@ -94,6 +94,7 @@ void ScheduledThreadPool::ShutDown()
                 isStarted = static_cast<bool>(t);
             }
             if (isStarted) {
+                std::cout << "start stop" << std::endl;
                 t->Stop();
             }
         }

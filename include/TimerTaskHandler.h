@@ -21,6 +21,7 @@ namespace zhanmm {
 
 TimeValue GetCurrentTime();
 
+const int MAX_WAIT_TIME_MS_WEHN_QUEUE_IS_EMPTY = 100;
 
 class TimerTaskHandler : public boost::noncopyable {
 public:
