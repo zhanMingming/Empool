@@ -27,16 +27,18 @@ private:
 
 public:
     //typedef boost::shared_ptr<WorkerThread> Ptr;
+    typedef CloseableThread::FinishAction FinishAction;
     typedef CloseableThread::Function Function;
 
     WorkerThread(boost::shared_ptr<TaskQueueBase> taskQueue, bool isScaling = false);
-    WorkerThread(boost::shared_ptr<TaskQueueBase> taskQueue, const Function& action, bool isScaling = false);
+    WorkerThread(boost::shared_ptr<TaskQueueBase> taskQueue, const FinishAction& action, bool isScaling = false);
     ~WorkerThread();
+    int GetThreadId() const;
 
     void Close();
     void AsyncClose();
 private:
-    void Init(boost::shared_ptr<TaskQueueBase> taskQueue, const Function& action);
+    void Init(boost::shared_ptr<TaskQueueBase> taskQueue, const FinishAction& action);
     void ProcessError(const std::exception& e);
     void WorkFunction(const Function& checkFunc);
     void GetTask();

@@ -17,7 +17,7 @@ namespace zhanmm {
 
 namespace {
 struct NoOp {
-    void operator()()
+    void operator()(int threadId)
     {}
 };
 }  // namespace
@@ -31,14 +31,14 @@ WorkerThread::WorkerThread(boost::shared_ptr<TaskQueueBase> taskQueue, bool isSc
 }
 
 WorkerThread::WorkerThread(boost::shared_ptr<TaskQueueBase> taskQueue,
-        const Function& action, bool isScaling)
+        const FinishAction& action, bool isScaling)
 :m_isScaling(isScaling)
 {
     Init(taskQueue, action);
 }
 
-inline void WorkerThread::Init(boost::shared_ptr<TaskQueueBase> taskQueue,
-        const Function& action)
+void WorkerThread::Init(boost::shared_ptr<TaskQueueBase> taskQueue,
+        const FinishAction& action)
 {
 
     m_taskQueue = taskQueue;
@@ -63,6 +63,12 @@ inline void WorkerThread::Init(boost::shared_ptr<TaskQueueBase> taskQueue,
 // dtor has to be defined for pimpl idiom
 WorkerThread::~WorkerThread()
 {}
+
+
+int WorkerThread::GetThreadId() const
+{
+    return m_thread->GetThreadId();
+}
 
 void WorkerThread::Close()
 {
@@ -126,6 +132,7 @@ void WorkerThread::WorkFunction(const Function& checkFunc)
         // 4. perform any post-task action
     }
 }
+
 bool WorkerThread::GetTask(boost::shared_ptr<TaskBase>& task, int wait_in_ms) {
     return m_taskQueue->PopTimeWait(task, wait_in_ms);
 }

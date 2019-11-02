@@ -57,7 +57,7 @@ class FixedThreadPool : public boost::noncopyable {
   private:
     boost::shared_ptr<TaskBase>  DoAddTask(boost::shared_ptr<TaskBase> task);
 
-    void NotifyWhenThreadsStop();
+    void NotifyWhenThreadsStop(int threadId);
     bool IsFinished() const;
     bool DoIsFinished() const;
     void SetState(const State state);
@@ -105,7 +105,7 @@ class FixedThreadPool : public boost::noncopyable {
       {
     t.reset(new WorkerThread(m_taskQueue,
                  boost::protect(boost::bind(&FixedThreadPool::
-                          NotifyWhenThreadsStop, this))
+                          NotifyWhenThreadsStop, this, _1))
                  ));
       }
 
@@ -230,7 +230,7 @@ class FixedThreadPool : public boost::noncopyable {
   }
 
   template<class TaskQueue>
-  void FixedThreadPool<TaskQueue>::NotifyWhenThreadsStop()
+  void FixedThreadPool<TaskQueue>::NotifyWhenThreadsStop(int threadId)
   {
 
     size_t stoppedThreadNum = 0;

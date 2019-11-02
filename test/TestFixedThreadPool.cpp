@@ -356,7 +356,7 @@ TEST(FixedThreadPool, test_StopNow_when_TaskQueue_empty)
 //   }
 //   ASSERT_EQ(0, counter);
 
-//   {
+//   { 
 //     boost::shared_ptr<TaskBase> task(new IncTask(counter));
 //     LFixedThreadPool threadPool;
 //     task = threadPool.AddIntervalTask(task, 200, false);

@@ -137,7 +137,7 @@ namespace {
       : counter(i)
     {}
 
-    void operator()()
+    void operator()(int threadId)
     {
       ++counter;
     }
@@ -218,7 +218,7 @@ namespace {
     void operator()()
     {
       sleep(1);
-      FinishAction::operator()();
+      FinishAction::operator()(1);
     }
   };
 }

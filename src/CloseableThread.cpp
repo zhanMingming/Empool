@@ -41,7 +41,7 @@ CloseableThread::CloseableThread(WorkFunction workFunction)
 }
 
 CloseableThread::CloseableThread(
-    WorkFunction workFunction, Function finishAction)
+    WorkFunction workFunction, FinishAction finishAction)
 : m_mutex(), m_stateGuard(m_mutex), m_state(INIT), m_isRequestClose(false), m_workFunction(workFunction),
   m_finishAction(finishAction)
 {
@@ -52,6 +52,11 @@ CloseableThread::~CloseableThread()
 {
 }
 
+
+int CloseableThread::GetThreadId() const 
+{
+    return m_thread->GetThreadId();
+}
 
 void CloseableThread::AsyncClose() 
 {
@@ -137,7 +142,6 @@ void CloseableThread::NotifyFinished()
     SetState(FINISHED);
     ConditionNotifyAllLocker l(m_stateGuard,
         BOOST_BIND(&CloseableThread::IsRequestClose, this));
-
 }
 
 void CloseableThread::ThreadFunction()
@@ -160,7 +164,7 @@ void CloseableThread::ThreadFunction()
 
     if (m_finishAction)
     {
-        m_finishAction();
+        m_finishAction(GetThreadId());
     }
     NotifyFinished();
 }

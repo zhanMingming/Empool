@@ -20,7 +20,7 @@
 #include <boost/noncopyable.hpp>
 #include <boost/scoped_ptr.hpp>
 #include <functional>
-
+#include <unordered_map>
 
 /*
 1.初始化 先new 出 minThreadSize 的线程。
@@ -69,13 +69,14 @@ class ScalingThreadPool : public boost::noncopyable {
   private:
     boost::shared_ptr<TaskBase>  DoAddTask(boost::shared_ptr<TaskBase> task);
 
-    void NotifyWhenThreadsStop();
+    void NotifyWhenThreadsStop(int threadId);
     //bool IsShutDown() const;
     bool DoIsShutDown() const;
     void SetState(const State state);
     void DoSetState(const State state);
     bool CheckIsRequestShutDown() const;
-    bool AddWorkThread();
+    bool AddWorkerThread();
+    bool SubWorkerThread(int threadId);
     // struct ThreadPoolTimerTask;
 
     // typedef std::vector<boost::shared_ptr<WorkerThread> > WorkerThreads;
@@ -102,10 +103,18 @@ class ScalingThreadPool : public boost::noncopyable {
     
     std::atomic_bool m_isRequestShutDown;
     
-    std::vector<boost::shared_ptr<WorkerThread> >  m_threads;
+    //std::vector<boost::shared_ptr<WorkerThread> >  m_threads;
     
+    std::unordered_map<int, boost::shared_ptr<WorkerThread> > m_threads;
     mutable Mutex m_mutex;
   };
+
+
+  template<typename Func>
+  boost::shared_ptr<TaskBase> ScalingThreadPool::AddTask(Func f)
+  {
+    return DoAddTask(MakeFunctorTask(f));
+  }
 
 } //namespace zhanmm
 

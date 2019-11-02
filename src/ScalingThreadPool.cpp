@@ -1,5 +1,5 @@
 #include "ScalingThreadPool.h"
-
+#include <iostream>
 namespace zhanmm {
 
 
@@ -20,13 +20,14 @@ namespace zhanmm {
       m_isRequestShutDown(false),
       m_threads(m_corePoolSize)
   {
-
-    BOOST_FOREACH(boost::shared_ptr<WorkerThread>& t, m_threads)
-      {
-    t.reset(new WorkerThread(m_taskQueue, boost::protect(boost::bind(&ScalingThreadPool::
-                          NotifyWhenThreadsStop, this))
-                 ));
-      }
+    std::cout << m_corePoolSize << std::endl;
+    for (int index = 0; index < m_corePoolSize; ++index)
+    {
+        std::cout << "start thread" << std::endl;
+        boost::shared_ptr<WorkerThread> t(new WorkerThread(m_taskQueue, boost::protect(boost::bind(&ScalingThreadPool::
+                          NotifyWhenThreadsStop, this,  _1))));
+        m_threads.insert(std::make_pair(t->GetThreadId(), t));
+    }
 
     SetState(RUNNING);
     
@@ -53,11 +54,7 @@ namespace zhanmm {
   }
 
   
-  template<typename Func>
-  boost::shared_ptr<TaskBase> ScalingThreadPool::AddTask(Func f)
-  {
-    return DoAddTask(MakeFunctorTask(f));
-  }
+  
 
 
   // 
@@ -95,20 +92,24 @@ namespace zhanmm {
     bool flag = false;
     if (m_isRequestShutDown.compare_exchange_weak(flag, true, std::memory_order_release, std::memory_order_relaxed)) {
       
-      SetState(STOP);
+        SetState(STOP);
         // NOTE: there may be some tasks pushed after these EndTasks,
         //     because Sm_isRequestShutDown is locked alone, and if a thread
         //     calling AddTask before this StopAsync and stop running,
         //     then StopAsync is run, push EndTasks and the thread is
         //     running again, then the tasks will be pushed after the
         //     EndTasks.
-      BOOST_FOREACH(boost::shared_ptr<WorkerThread>& t, m_threads)
-      {
-        t->AsyncClose();
+      // BOOST_FOREACH(boost::shared_ptr<WorkerThread>& t, m_threads)
+      // {
+      //   t->AsyncClose();
+      // }
+      
+      for (std::unordered_map<int, boost::shared_ptr<WorkerThread> >::iterator iter = m_threads.begin(); iter != m_threads.end(); ++iter) {
+          iter->second->AsyncClose();    
       }
-      const size_t threadNum = m_threads.size();
+      const size_t threadNum = GetThreadNum();
       for (size_t i = 0; i < threadNum; ++i) {
-            m_taskQueue->Push(boost::shared_ptr<TaskBase>(new EndTask()));
+          m_taskQueue->Push(boost::shared_ptr<TaskBase>(new EndTask()));
       }
     }
   }
@@ -134,21 +135,32 @@ namespace zhanmm {
     return m_isRequestShutDown.load();
   }
 
-  bool  ScalingThreadPool::AddWorkThread() {
+  bool  ScalingThreadPool::AddWorkerThread() {
     if (m_taskQueue->Size() < TASK_QUEUE_SIZE_THRESHOLD || GetThreadNum() >= m_maxThreadSize || m_isRequestShutDown.load()) {
         return false;
     }
 
     boost::shared_ptr<WorkerThread>  newWorkerThread(new WorkerThread(m_taskQueue, boost::protect(boost::bind(&ScalingThreadPool::
-                          NotifyWhenThreadsStop, this))));
+                          NotifyWhenThreadsStop, this, _1))));
     
 
     MutexLocker   lock(m_addOrSubThreadNumGuard);
-    m_threads.push_back(newWorkerThread);
+    m_threads.insert(std::make_pair(newWorkerThread->GetThreadId(), newWorkerThread));
     return true;
 
   }
 
+  bool ScalingThreadPool::SubWorkerThread(int threadId) {
+    MutexLocker lock(m_addOrSubThreadNumGuard);
+    std::unordered_map<int, boost::shared_ptr<WorkerThread> >::iterator iter = m_threads.find(threadId);
+    if (iter != m_threads.end()) {
+        m_threads.erase(iter);
+    } else {
+        return false;
+    }
+    return true;
+  }
+  
   
   boost::shared_ptr<TaskBase> ScalingThreadPool::DoAddTask(boost::shared_ptr<TaskBase> task)
   {
@@ -166,8 +178,13 @@ namespace zhanmm {
   }
 
   
-  void ScalingThreadPool::NotifyWhenThreadsStop()
+  void ScalingThreadPool::NotifyWhenThreadsStop(int threadId)
   {
+    // not request shutdown
+    if (!m_isRequestShutDown.load()) {
+        SubWorkerThread(threadId);
+        return;
+    }
 
     size_t stoppedThreadNum = 0;
     {

@@ -17,16 +17,18 @@ namespace zhanmm {
   // This class can not be derived.
 class CloseableThread : private ::boost::noncopyable {
 public:
+    typedef boost::function<void(int)> FinishAction;
     typedef boost::function<void()> Function;
     typedef boost::function<void(Function)> WorkFunction;
 
     CloseableThread(WorkFunction workFunction);
-    CloseableThread(WorkFunction workFunction, Function finishAction);
+    CloseableThread(WorkFunction workFunction, FinishAction finishAction);
     ~CloseableThread();
 
     void Close();
     void AsyncClose();
     bool IsRequestClose() const;
+    int GetThreadId() const;
 
 protected:
     enum State {
@@ -53,7 +55,7 @@ private:
     mutable ConditionVariable m_stateGuard;
     std::atomic_bool m_isRequestClose;
     WorkFunction m_workFunction;
-    Function m_finishAction;
+    FinishAction m_finishAction;
     boost::scoped_ptr<Thread> m_thread; // Thread must be the last variable
 };
 

@@ -3,7 +3,7 @@
 
 #include "FixedThreadPool.h"
 #include "ScheduledThreadPool.h"
-
+#include "ScalingThreadPool.h"
 
 
 
@@ -19,7 +19,9 @@ public:
         return new LFixedThreadPool(threadNum);
     }
     //动态线程池
-    //static newCachedThreadPool();
+    static ScalingThreadPool* newScalingThreadPool(int minThreadSize = 4, int maxThreadSize = 8) {
+        return new ScalingThreadPool(minThreadSize, maxThreadSize);
+    }
 
 
     //newScheduledThreadPool创建一个定长线程池，支持定时及周期性任务执行
