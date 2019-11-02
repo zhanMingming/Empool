@@ -1,6 +1,6 @@
 
 #include "WorkerThread.h"
-#include "TaskQueue.h"
+#include "BlockingTaskQueue.h"
 //#include "EndTask.h"
 #include <gtest/gtest.h>
 #include <iostream>
@@ -41,7 +41,7 @@ namespace {
 //   {
 
 //     atomic<int> counter(0);
-//     boost::shared_ptr<TaskQueueBase> q(new TaskQueue);
+//     boost::shared_ptr<TaskQueueBase> q(new BlockingTaskQueue);
 //     WorkerThread t(q);
 //     q->Push(boost::shared_ptr<TaskBase>(new EmptyTask));
 //   }
@@ -52,7 +52,7 @@ namespace {
 TEST(WorkerThread, test_Close)
 {
   atomic<int> counter(0);
-  boost::shared_ptr<TaskQueueBase> q(new TaskQueue);
+  boost::shared_ptr<TaskQueueBase> q(new BlockingTaskQueue);
   {
     WorkerThread t(q);
     q->Push(boost::shared_ptr<TaskBase>(new TestTask(counter)));
@@ -69,7 +69,7 @@ TEST(WorkerThread, test_Close)
 TEST(WorkerThread, test_multiple_Close)
 {
   atomic<int> counter(0);
-  boost::shared_ptr<TaskQueueBase> q(new TaskQueue);
+  boost::shared_ptr<TaskQueueBase> q(new BlockingTaskQueue);
   {
     WorkerThread t(q);
     q->Push(boost::shared_ptr<TaskBase>(new TestTask(counter)));
@@ -100,7 +100,7 @@ namespace {
 TEST(WorkerThread, test_multiple_Close_simultunuously)
 {
   atomic<int> counter(0);
-  boost::shared_ptr<TaskQueueBase> q(new TaskQueue);
+  boost::shared_ptr<TaskQueueBase> q(new BlockingTaskQueue);
   {
     WorkerThread t(q);
     q->Push(boost::shared_ptr<TaskBase>(new TestTask(counter)));
@@ -116,7 +116,7 @@ TEST(WorkerThread, test_multiple_Close_simultunuously)
 // TEST(WorkerThread, test_CloseAsync)
 // {
 //   atomic<int> counter(0);
-//   boost::shared_ptr<TaskQueueBase> q(new TaskQueue);
+//   boost::shared_ptr<TaskQueueBase> q(new BlockingTaskQueue);
 //   {
 //     WorkerThread t(q);
 //     q->Push(boost::shared_ptr<TaskBase>(new TestTask(counter)));
@@ -148,7 +148,7 @@ TEST(WorkerThread, test_ctor_with_FinishAction)
 {
   atomic<int> counter(0);
 
-  boost::shared_ptr<TaskQueueBase> q(new TaskQueue);
+  boost::shared_ptr<TaskQueueBase> q(new BlockingTaskQueue);
   {
     WorkerThread t(q, FinishAction(counter));
     q->Push(boost::shared_ptr<TaskBase>(new TestTask(counter)));
@@ -180,7 +180,7 @@ TEST(WorkerThread, test_CloseNow)
 {
   atomic<int> counter(0);
   atomic<int> finishFlag(0);
-  boost::shared_ptr<TaskQueueBase> q(new TaskQueue);
+  boost::shared_ptr<TaskQueueBase> q(new BlockingTaskQueue);
   {
     WorkerThread t(q, FinishAction(finishFlag));
     q->Push(boost::shared_ptr<TaskBase>(new LoopTask(counter)));
@@ -196,7 +196,7 @@ TEST(WorkerThread, test_multiple_CloseNow)
 {
   atomic<int> counter(0);
   atomic<int> finishFlag(0);
-  boost::shared_ptr<TaskQueueBase> q(new TaskQueue);
+  boost::shared_ptr<TaskQueueBase> q(new BlockingTaskQueue);
   {
     WorkerThread t(q, FinishAction(finishFlag));
     q->Push(boost::shared_ptr<TaskBase>(new LoopTask(counter)));
@@ -227,7 +227,7 @@ TEST(WorkerThread, test_FinishAcion_execute_before_Finished)
 {
   atomic<int> counter(0);
   atomic<int> finishFlag(0);
-  boost::shared_ptr<TaskQueueBase> q(new TaskQueue);
+  boost::shared_ptr<TaskQueueBase> q(new BlockingTaskQueue);
   {
     WorkerThread t(q, FinishAction(finishFlag));
     q->Push(boost::shared_ptr<TaskBase>(new LoopTask(counter)));

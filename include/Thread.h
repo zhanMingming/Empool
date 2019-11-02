@@ -12,6 +12,7 @@
 #include <boost/scoped_ptr.hpp>
 
 namespace zhanmm {
+typedef  unsigned long long  pthread_id;
 
 class Thread : private boost::noncopyable {
 public:
@@ -20,7 +21,9 @@ public:
 
     ~Thread();
 
-    int GetThreadId() const { return m_threadId; }
+    int GetThreadId() const { 
+        return m_threadId;
+    }
 
 private:
     template<class Func>

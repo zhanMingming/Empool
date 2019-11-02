@@ -5,16 +5,32 @@
 #include <sys/syscall.h>
 #include <sys/types.h>
 #include <unistd.h>
-
+#include <pthread.h>
 
 namespace {
 
 pid_t gettid()
 {
+    #if defined(__APPLE__)
+    uint64_t tid64;
+    pthread_threadid_np(NULL, &tid64);
+    return (pid_t)tid64;
+    #else
     return static_cast<pid_t>(::syscall(SYS_gettid));
+    #endif
 }
 
 }  // namespace
+
+/*
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_12
+uint64_t tid64;
+pthread_threadid_np(NULL, &tid64);
+pid_t tid = (pid_t)tid64;
+#else
+pid_t tid = syscall(__NR_gettid);
+#endif
+*/
 
 namespace zhanmm {
 

@@ -49,6 +49,8 @@ class FixedThreadPool : public boost::noncopyable {
     // typename FutureTask<T>::Ptr AddFutureTask(Func f);
 
     void Stop();
+
+
     void AsyncStop();
     //void StopNow();
     

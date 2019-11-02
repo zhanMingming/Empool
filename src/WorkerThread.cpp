@@ -24,13 +24,15 @@ struct NoOp {
 
 
 
-WorkerThread::WorkerThread(boost::shared_ptr<TaskQueueBase> taskQueue)
+WorkerThread::WorkerThread(boost::shared_ptr<TaskQueueBase> taskQueue, bool isScaling)
+:m_isScaling(isScaling)
 {
     Init(taskQueue, NoOp());
 }
 
 WorkerThread::WorkerThread(boost::shared_ptr<TaskQueueBase> taskQueue,
-        const Function& action)
+        const Function& action, bool isScaling)
+:m_isScaling(isScaling)
 {
     Init(taskQueue, action);
 }
@@ -104,10 +106,14 @@ void WorkerThread::WorkFunction(const Function& checkFunc)
         checkFunc();
 
         // 2. fetch task from task queue
-        GetTask();
-
-        // 2.5. check cancel request again
-        checkFunc();
+        if (!m_isScaling) {
+            GetTask();
+        
+        } else if (!GetTask(m_runningTask, MAX_WAIT_IN_MS)) {
+        // if can't getTask in wait_in_ms, so AsyncClose()
+            AsyncClose();
+            checkFunc();
+        }
 
         // 3. perform the task
         if (m_runningTask) {
@@ -120,11 +126,15 @@ void WorkerThread::WorkFunction(const Function& checkFunc)
         // 4. perform any post-task action
     }
 }
+bool WorkerThread::GetTask(boost::shared_ptr<TaskBase>& task, int wait_in_ms) {
+    return m_taskQueue->PopTimeWait(task, wait_in_ms);
+}
+
 
 void WorkerThread::GetTask()
 {
     //std::cout << "ready get Task" << std::endl;
-    MutexLocker l(m_runningTaskGuard);
+    //MutexLocker l(m_runningTaskGuard);
     m_runningTask = m_taskQueue->Pop();
 }
 

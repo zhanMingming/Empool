@@ -16,6 +16,8 @@ public:
     BlockingTaskQueue() {}
     virtual void Push(boost::shared_ptr<TaskBase> task);
     virtual boost::shared_ptr<TaskBase> Pop();
+
+    bool PopTimeWait(boost::shared_ptr<TaskBase>& task, int wait_in_ms);
     virtual size_t Size() const;
     virtual ~BlockingTaskQueue() {}
 private:

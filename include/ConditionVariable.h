@@ -60,7 +60,7 @@ public:
     /// when time expired.
     /// Note that when the function returns, the mutex is locked.
     template<typename WaitConditionFunc>
-    bool TimedWait(WaitConditionFunc f, TimeValue delay_in_ms)
+    bool TimeWait(WaitConditionFunc f, TimeValue delay_in_ms)
     {
         m_conditionVariable.Lock();
         while (f())
@@ -81,6 +81,7 @@ public:
 private:
     ConditionVariable& m_conditionVariable;
 };
+
 
 
 class ConditionNotifyLocker : private boost::noncopyable {

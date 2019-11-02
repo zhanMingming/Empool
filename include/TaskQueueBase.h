@@ -13,6 +13,7 @@ namespace zhanmm {
     
     virtual void Push(boost::shared_ptr<TaskBase> task) = 0;
     virtual boost::shared_ptr<TaskBase> Pop() = 0;
+    virtual bool PopTimeWait(boost::shared_ptr<TaskBase>& task, int wait_in_ms) = 0;
     virtual size_t Size() const = 0;
   };
 }

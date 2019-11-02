@@ -1,3 +1,6 @@
+#ifndef  ZHANMM_THREAD_POOL_MANAGER_H
+#define  ZHANMM_THREAD_POOL_MANAGER_H
+
 #include "FixedThreadPool.h"
 #include "ScheduledThreadPool.h"
 
@@ -12,13 +15,17 @@ namespace zhanmm {
 class ThreadPoolManager {
 public:
     //创建一个可重用固定线程数的线程池，以共享的无界队列方式来运行这些线程。
-    static FixedThreadPool* newFixedThreadPool(int threadNum = 4);
+    static LFixedThreadPool* newFixedThreadPool(int threadNum = 4) {
+        return new LFixedThreadPool(threadNum);
+    }
     //动态线程池
     //static newCachedThreadPool();
 
 
     //newScheduledThreadPool创建一个定长线程池，支持定时及周期性任务执行
-    static ScheduledThreadPool* newScheduledThreadPool(int threadNum = 1);
+    static ScheduledThreadPool* newScheduledThreadPool(int threadNum = 1) {
+        return new ScheduledThreadPool(threadNum);
+    }
     
 
     // 创建一个单线程化的线程池，它只会用唯一的工作线程来执行任务，

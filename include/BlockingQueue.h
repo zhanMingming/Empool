@@ -31,7 +31,7 @@ public:
 
     void Push(const ElemType& elem)
     {
-        ConditionNotifyAllLocker l(m_mutexCond,
+        ConditionNotifyLocker l(m_mutexCond,
                 boost::bind(&QueueImpl::empty, &m_queue));
         m_queue.push(elem);
     }
@@ -57,6 +57,17 @@ public:
 
         elem = m_queue.front();
         m_queue.pop();
+    }
+
+    bool PopTimeWait(ElemType& elem, int time_in_ms) {
+        
+        ConditionWaitLocker l(m_mutexCond);
+        if (!l.TimeWait(boost::bind(&QueueImpl::empty, &m_queue), time_in_ms))  {
+            return false;
+        }
+        elem = m_queue.front();
+        m_queue.pop();
+        return true;
     }
 
 

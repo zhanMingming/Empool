@@ -98,6 +98,7 @@ void ScheduledThreadPool::ShutDown()
                 t->Stop();
             }
         }
+        SetState(FINISHED);
     }
 }
  
@@ -184,6 +185,10 @@ void ScheduledThreadPool::ShutDown()
   //     }
   // }
 
+bool ScheduledThreadPool::IsShutDown() const 
+{
+    return IsFinished();
+}
 
 bool ScheduledThreadPool::IsFinished() const
 {
