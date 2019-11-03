@@ -2,6 +2,7 @@
 #define ZHANMM_THREAD_H_
 
 #include "System.h"
+#include "Util.h"
 
 #include <atomic>
 #include <pthread.h>
@@ -11,6 +12,7 @@
 #include <boost/noncopyable.hpp>
 #include <boost/scoped_ptr.hpp>
 #include <iostream>
+    
 
 namespace zhanmm {
 //typedef  unsigned long long  pthread_id;
@@ -23,6 +25,9 @@ public:
     ~Thread();
 
     int GetThreadId() const { 
+        while(!m_threadId) {
+            MicroSleep(10);
+        }
         return m_threadId;
     }
 
@@ -36,16 +41,16 @@ private:
 
     template<typename Func>
     struct Args {
-        Args(int* tid, const Func& f)
+        Args(std::atomic_int* tid, const Func& f)
         : threadId(tid), func(f)
         {}
 
-        int* threadId;
+        std::atomic_int* threadId;
         Func func;
     };
 
     pthread_t m_threadData;
-    int m_threadId;
+    std::atomic_int m_threadId;
     bool m_isStart;
 };
 

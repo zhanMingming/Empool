@@ -28,7 +28,7 @@ namespace zhanmm {
         boost::shared_ptr<WorkerThread> t(new WorkerThread(m_taskQueue, boost::protect(boost::bind(&ScalingThreadPool::
                           NotifyWhenThreadsStop, this,  _1)), boost::protect(boost::bind(&ScalingThreadPool::
                           IfMoreThan, this))));
-        sleep(1);
+        //sleep(1);
         std::cout << "threadid:" << t->GetThreadId() << std::endl;
         std::cout << "insert begin" << std::endl;
         m_threads.insert(std::make_pair(t->GetThreadId(), t));
@@ -42,6 +42,7 @@ namespace zhanmm {
   
   ScalingThreadPool::~ScalingThreadPool()
   {
+    std::cout << "~ScalingThreadPool" << std::endl;
     // keep other thread from pushing more tasks
     ShutDownNow();
   }
@@ -119,12 +120,12 @@ namespace zhanmm {
       // {
       //   t->AsyncClose();
       // }
-      
+      MutexLocker lock(m_addOrSubThreadNumGuard);
       for (std::unordered_map<int, boost::shared_ptr<WorkerThread> >::iterator iter = m_threads.begin(); iter != m_threads.end(); ++iter) {
           iter->second->AsyncClose();
           std::cout << "AsyncClose" << std::endl; 
       }
-      const size_t threadNum = GetThreadNum();
+      const size_t threadNum = m_threads.size();
       for (size_t i = 0; i < threadNum; ++i) {
           m_taskQueue->Push(boost::shared_ptr<TaskBase>(new EndTask()));
           std::cout << "put task done" << std::endl;
@@ -165,7 +166,7 @@ namespace zhanmm {
     
 
     MutexLocker   lock(m_addOrSubThreadNumGuard);
-    sleep(1);
+    //sleep(1);
     m_threads.insert(std::make_pair(newWorkerThread->GetThreadId(), newWorkerThread));
     return true;
 

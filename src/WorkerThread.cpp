@@ -125,8 +125,10 @@ void WorkerThread::WorkFunction(const Function& checkFunc)
         if (GetTask(m_runningTask, MAX_WAIT_IN_MS)) {
         // if can't getTask in wait_in_ms, so AsyncClose()
             std::cout << "wait too long exit" << std::endl;
-            AsyncClose();
-            checkFunc();
+            if (m_judge()) {
+                AsyncClose();
+                checkFunc();
+            }
         } else if (m_runningTask) {
             if (dynamic_cast<EndTask*>(m_runningTask.get()) != NULL) {
                 break; // stop the worker thread.
@@ -141,7 +143,7 @@ void WorkerThread::WorkFunction(const Function& checkFunc)
 
 bool WorkerThread::GetTask(boost::shared_ptr<TaskBase>& task, int wait_in_ms) {
     //std::cout << "ready get task" << std::endl;
-    return  !m_taskQueue->PopTimeWait(task, wait_in_ms) && m_judge();
+    return  !m_taskQueue->PopTimeWait(task, wait_in_ms);
 }
 
 
