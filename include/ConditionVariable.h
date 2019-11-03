@@ -1,13 +1,11 @@
 #ifndef ZHANMM_VARIABLE_H_
 #define ZHANMM_VARIABLE_H_
-
+#include "Util.h"
 #include "Mutex.h"
 #include <pthread.h>
 #include <boost/noncopyable.hpp>
 
 namespace zhanmm {
-
-typedef unsigned long long TimeValue;
 
 
 class ConditionVariable : private boost::noncopyable {

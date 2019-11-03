@@ -5,6 +5,7 @@
 #include "ConditionVariable.h"
 #include "TaskBase.h"
 #include "Mutex.h"
+#include "Util.h"
 
 #include <memory>
 #include <queue>
@@ -15,8 +16,6 @@
 
 namespace zhanmm {
 
-
-typedef uint64_t TimeValue;
 
 
 //TimeValue GetCurrentTime();
