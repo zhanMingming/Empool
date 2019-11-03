@@ -17,6 +17,8 @@ namespace zhanmm {
 
 const int MAX_WAIT_IN_MS = 1000 * 30;
 
+class ScalingThreadPool;
+
 class WorkerThread : public boost::noncopyable {
 private:
     enum State {
@@ -29,9 +31,11 @@ public:
     //typedef boost::shared_ptr<WorkerThread> Ptr;
     typedef CloseableThread::FinishAction FinishAction;
     typedef CloseableThread::Function Function;
+    typedef boost::function<bool()> JudgeAction;
 
-    WorkerThread(boost::shared_ptr<TaskQueueBase> taskQueue, bool isScaling = false);
-    WorkerThread(boost::shared_ptr<TaskQueueBase> taskQueue, const FinishAction& action, bool isScaling = false);
+
+    WorkerThread(boost::shared_ptr<TaskQueueBase> taskQueue, const JudgeAction  judge, bool isScaling = false);
+    WorkerThread(boost::shared_ptr<TaskQueueBase> taskQueue, const FinishAction& action, const JudgeAction  judge, bool isScaling = false);
     ~WorkerThread();
     int GetThreadId() const;
 
@@ -45,6 +49,8 @@ private:
     bool GetTask(boost::shared_ptr<TaskBase>& task, int wait_in_ms);
 
     bool m_isScaling;
+    int  m_corePoolSize;
+    const JudgeAction  m_judge;
     boost::shared_ptr<TaskQueueBase> m_taskQueue;
     boost::shared_ptr<TaskBase>  m_runningTask;
     mutable Mutex m_runningTaskGuard;

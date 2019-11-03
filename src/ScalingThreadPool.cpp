@@ -23,10 +23,16 @@ namespace zhanmm {
     std::cout << m_corePoolSize << std::endl;
     for (int index = 0; index < m_corePoolSize; ++index)
     {
+
         std::cout << "start thread" << std::endl;
         boost::shared_ptr<WorkerThread> t(new WorkerThread(m_taskQueue, boost::protect(boost::bind(&ScalingThreadPool::
-                          NotifyWhenThreadsStop, this,  _1)), true));
+                          NotifyWhenThreadsStop, this,  _1)), boost::protect(boost::bind(&ScalingThreadPool::
+                          IfMoreThan, this))));
+        sleep(1);
+        std::cout << "threadid:" << t->GetThreadId() << std::endl;
+        std::cout << "insert begin" << std::endl;
         m_threads.insert(std::make_pair(t->GetThreadId(), t));
+        std::cout << "insert finish" << std::endl;
     }
 
     SetState(RUNNING);
@@ -37,9 +43,13 @@ namespace zhanmm {
   ScalingThreadPool::~ScalingThreadPool()
   {
     // keep other thread from pushing more tasks
-    ShutDown();
+    ShutDownNow();
   }
 
+  size_t  ScalingThreadPool::GetCorePoolSize() const 
+  {
+    return m_corePoolSize;
+  }
   
   size_t ScalingThreadPool::GetThreadNum() const
   {
@@ -47,6 +57,12 @@ namespace zhanmm {
     return m_threads.size();
   }
 
+  bool ScalingThreadPool::IfMoreThan() const
+  {
+    std::cout << "ifmorethen:" << GetThreadNum() << ":"<< GetCorePoolSize() << std::endl;
+    std::cout << "IfMoreThan:" << (GetThreadNum() > GetCorePoolSize()) << std::endl;
+    return GetThreadNum() > GetCorePoolSize();
+  }
   
   boost::shared_ptr<TaskBase> ScalingThreadPool::AddTask(boost::shared_ptr<TaskBase> task)
   {
@@ -105,11 +121,13 @@ namespace zhanmm {
       // }
       
       for (std::unordered_map<int, boost::shared_ptr<WorkerThread> >::iterator iter = m_threads.begin(); iter != m_threads.end(); ++iter) {
-          iter->second->AsyncClose();    
+          iter->second->AsyncClose();
+          std::cout << "AsyncClose" << std::endl; 
       }
       const size_t threadNum = GetThreadNum();
       for (size_t i = 0; i < threadNum; ++i) {
           m_taskQueue->Push(boost::shared_ptr<TaskBase>(new EndTask()));
+          std::cout << "put task done" << std::endl;
       }
     }
   }
@@ -139,18 +157,22 @@ namespace zhanmm {
     if (m_taskQueue->Size() < TASK_QUEUE_SIZE_THRESHOLD || GetThreadNum() >= m_maxThreadSize || m_isRequestShutDown.load()) {
         return false;
     }
+    std::cout << "add worker" << std::endl;
 
     boost::shared_ptr<WorkerThread>  newWorkerThread(new WorkerThread(m_taskQueue, boost::protect(boost::bind(&ScalingThreadPool::
-                          NotifyWhenThreadsStop, this, _1))));
+                          NotifyWhenThreadsStop, this, _1)), boost::protect(boost::bind(&ScalingThreadPool::
+                          IfMoreThan, this))));
     
 
     MutexLocker   lock(m_addOrSubThreadNumGuard);
+    sleep(1);
     m_threads.insert(std::make_pair(newWorkerThread->GetThreadId(), newWorkerThread));
     return true;
 
   }
 
   bool ScalingThreadPool::SubWorkerThread(int threadId) {
+    std::cout << "SubWorkerThread : " << threadId << std::endl;
     MutexLocker lock(m_addOrSubThreadNumGuard);
     std::unordered_map<int, boost::shared_ptr<WorkerThread> >::iterator iter = m_threads.find(threadId);
     if (iter != m_threads.end()) {
@@ -174,6 +196,7 @@ namespace zhanmm {
     }
     
     m_taskQueue->Push(task);
+    AddWorkerThread();
     return task;
   }
 

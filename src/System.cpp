@@ -1,11 +1,11 @@
 #include "System.h"
 
 #include <cstdio>
-
 #include <sys/syscall.h>
 #include <sys/types.h>
 #include <unistd.h>
 #include <pthread.h>
+#include <iostream>
 
 namespace {
 
@@ -14,6 +14,7 @@ pid_t gettid()
     #if defined(__APPLE__)
     uint64_t tid64;
     pthread_threadid_np(NULL, &tid64);
+    std::cout << "tid64:" << tid64 << std::endl;
     return (pid_t)tid64;
     #else
     return static_cast<pid_t>(::syscall(SYS_gettid));
@@ -45,6 +46,7 @@ void CacheTid()
     if (t_cachedTid == 0)
     {
         t_cachedTid = gettid();
+        std::cout << "tid:" << t_cachedTid << std::endl;
         t_tidStringLength = snprintf(t_tidString, sizeof(t_tidString), "%5d ", t_cachedTid);
     }
 }

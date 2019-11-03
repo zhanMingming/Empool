@@ -10,9 +10,10 @@
 #include <stdexcept>
 #include <boost/noncopyable.hpp>
 #include <boost/scoped_ptr.hpp>
+#include <iostream>
 
 namespace zhanmm {
-typedef  unsigned long long  pthread_id;
+//typedef  unsigned long long  pthread_id;
 
 class Thread : private boost::noncopyable {
 public:
@@ -35,16 +36,16 @@ private:
 
     template<typename Func>
     struct Args {
-        Args(std::atomic<int>* tid, const Func& f)
+        Args(int* tid, const Func& f)
         : threadId(tid), func(f)
         {}
 
-        std::atomic<int>* threadId;
+        int* threadId;
         Func func;
     };
 
     pthread_t m_threadData;
-    std::atomic<int> m_threadId;
+    int m_threadId;
     bool m_isStart;
 };
 
@@ -55,13 +56,14 @@ Thread::Thread(const Func& f)
 : m_threadId(0), m_isStart(false)
 {
     
-
+    std::cout << "thread contructor" << std::endl;
     Args<Func>* args = new Args<Func>(&m_threadId, f);
 
     int error =  pthread_create(&m_threadData, NULL,
             ThreadFunction<Func>, args);
     if (error != 0)
     {
+        std::cout << "thread make fail " << std::endl;
         ProcessCreateError(error);
     }
     m_isStart = true;
@@ -74,6 +76,8 @@ void* Thread::ThreadFunction(void* arg)
 
     boost::scoped_ptr<Args<Func> > args(reinterpret_cast<Args<Func>*>(arg));
     *(args->threadId) = Tid();
+    std::cout << "ThreadFunction" << std::endl;
+    std::cout << *(args->threadId) << std::endl;
 
     try
     {

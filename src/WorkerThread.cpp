@@ -3,11 +3,14 @@
 #include "TaskQueueBase.h"
 #include "TaskBase.h"
 #include "EndTask.h"
+#include "ScalingThreadPool.h"
+
 #include <stdexcept>
 #include <iostream>
 #include <string>
 #include <boost/bind.hpp>
 #include <functional>
+
 
 using namespace std;
 //using namespace zhanmm;
@@ -24,15 +27,16 @@ struct NoOp {
 
 
 
-WorkerThread::WorkerThread(boost::shared_ptr<TaskQueueBase> taskQueue, bool isScaling)
-:m_isScaling(isScaling)
+WorkerThread::WorkerThread(boost::shared_ptr<TaskQueueBase> taskQueue, const JudgeAction judge, bool isScaling)
+:m_isScaling(isScaling), m_judge(judge)
 {
     Init(taskQueue, NoOp());
 }
 
+
 WorkerThread::WorkerThread(boost::shared_ptr<TaskQueueBase> taskQueue,
-        const FinishAction& action, bool isScaling)
-:m_isScaling(isScaling)
+        const FinishAction& action, const JudgeAction judge, bool isScaling)
+:m_isScaling(isScaling), m_judge(judge)
 {
     std::cout << "start workerThread" << std::endl;
     Init(taskQueue, action);
@@ -113,17 +117,17 @@ void WorkerThread::WorkFunction(const Function& checkFunc)
         checkFunc();
 
         // 2. fetch task from task queue
-        if (!m_isScaling) {
-            GetTask();
+        // if (!m_isScaling) {
+        //     GetTask();
         
-        } else if (!GetTask(m_runningTask, MAX_WAIT_IN_MS)) {
+        // } else 
+
+        if (GetTask(m_runningTask, MAX_WAIT_IN_MS)) {
         // if can't getTask in wait_in_ms, so AsyncClose()
+            std::cout << "wait too long exit" << std::endl;
             AsyncClose();
             checkFunc();
-        }
-
-        // 3. perform the task
-        if (m_runningTask) {
+        } else if (m_runningTask) {
             if (dynamic_cast<EndTask*>(m_runningTask.get()) != NULL) {
                 break; // stop the worker thread.
             } else {
@@ -134,16 +138,20 @@ void WorkerThread::WorkFunction(const Function& checkFunc)
     }
 }
 
+
 bool WorkerThread::GetTask(boost::shared_ptr<TaskBase>& task, int wait_in_ms) {
-    return m_taskQueue->PopTimeWait(task, wait_in_ms);
+    //std::cout << "ready get task" << std::endl;
+    return  !m_taskQueue->PopTimeWait(task, wait_in_ms) && m_judge();
 }
 
 
 void WorkerThread::GetTask()
 {
+    std::cout << "ready get task" << std::endl;
     //std::cout << "ready get Task" << std::endl;
     //MutexLocker l(m_runningTaskGuard);
     m_runningTask = m_taskQueue->Pop();
+    std::cout << "get task done" << std::endl;
 }
 
 } //namespace zhanmm

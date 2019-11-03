@@ -38,7 +38,7 @@ private:
 
     typedef bool (*CompareFunc)(boost::shared_ptr<TimerTask>, boost::shared_ptr<TimerTask>);
     typedef std::priority_queue<boost::shared_ptr<TimerTask>,
-                std::vector<boost::shared_ptr<TimerTask>>, CompareFunc> Queue;
+                std::vector<boost::shared_ptr<TimerTask> >, CompareFunc> Queue;
 
     mutable ConditionVariable m_cond;
     Queue m_queue;

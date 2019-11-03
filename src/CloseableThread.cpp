@@ -9,6 +9,7 @@
 
 
 using namespace std;
+using namespace boost;
 
 namespace zhanmm {
 
@@ -95,6 +96,7 @@ void CloseableThread::Init()
         }
         catch (const std::exception& e)
         {
+            std::cout << "thread_create error" << std::endl;
             ProcessError(e);
         }
     }
@@ -158,10 +160,10 @@ void CloseableThread::ThreadFunction()
     {
         cerr << " Success Close Thread id: " +to_string(m_thread->GetThreadId()) << endl;
     }
-    catch (...) // caught other exception
-    {
-        cerr << "other exception occur" << endl;
-    }
+    // catch (...) // caught other exception
+    // {
+    //     cerr << "other exception occur" << endl;
+    // }
 
     if (m_finishAction)
     {

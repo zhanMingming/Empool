@@ -15,8 +15,8 @@ namespace zhanmm {
 class ThreadPoolManager {
 public:
     //创建一个可重用固定线程数的线程池，以共享的无界队列方式来运行这些线程。
-    static LFixedThreadPool* newFixedThreadPool(int threadNum = 4) {
-        return new LFixedThreadPool(threadNum);
+    static FixedThreadPool* newFixedThreadPool(int threadNum = 4) {
+        return new FixedThreadPool(threadNum);
     }
     //动态线程池
     static ScalingThreadPool* newScalingThreadPool(int minThreadSize = 4, int maxThreadSize = 8) {

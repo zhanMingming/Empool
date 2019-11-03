@@ -3,6 +3,7 @@
 
 #include <sys/time.h>
 #include <errno.h>
+#include <iostream>
 
 using namespace zhanmm;
 
@@ -44,6 +45,7 @@ bool ConditionVariable::TimeWait(TimeValue delay_in_ms)
   struct timespec timeout;
 
   gettimeofday(&now, NULL);
+  std::cout << "delay_in_ms: " << static_cast<long>(delay_in_ms / 1000) << std::endl;
   timeout.tv_sec = now.tv_sec + static_cast<long>(delay_in_ms / 1000);
   timeout.tv_nsec = now.tv_usec +
       static_cast<long>(delay_in_ms % 1000) * 1000;
@@ -54,6 +56,7 @@ bool ConditionVariable::TimeWait(TimeValue delay_in_ms)
   }
   timeout.tv_nsec = timeout.tv_nsec * 1000;
   
+
   int ret =  pthread_cond_timedwait(&m_cond, m_mutex.getMutexPtr(), &timeout);
   return 0 == ret;
 }

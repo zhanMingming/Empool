@@ -31,7 +31,7 @@ public:
 
     void Push(const ElemType& elem)
     {
-        ConditionNotifyLocker l(m_mutexCond,
+        ConditionNotifyAllLocker l(m_mutexCond,
                 boost::bind(&QueueImpl::empty, &m_queue));
         m_queue.push(elem);
     }

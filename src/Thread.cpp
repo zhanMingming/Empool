@@ -30,6 +30,7 @@ void Thread::ProcessCreateError(const int error)
 void Thread::ProcessException(const exception& e)
 {
     cerr << e.what() << endl;
+    cout << e.what() << endl;
 }
 
 void Thread::ProcessUnknownException()
@@ -41,7 +42,9 @@ Thread::~Thread()
 {
     if (m_isStart)
     {
+        std::cout << "Thread join : " <<  GetThreadId() << std::endl;
         pthread_join(m_threadData, NULL);
+        std::cout << "Thread join finish" << std::endl;
     }
 }
 

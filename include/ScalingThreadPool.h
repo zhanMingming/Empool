@@ -48,6 +48,8 @@ class ScalingThreadPool : public boost::noncopyable {
   
 
     size_t GetThreadNum() const;
+    size_t GetCorePoolSize() const;
+    bool   IfMoreThan() const;
     boost::shared_ptr<TaskBase> AddTask(boost::shared_ptr<TaskBase> task);
 
     template<typename Func>
