@@ -1,8 +1,8 @@
 /*
 * @Author: zhanmingming
-* @Date:   2019-11-02 23:46:57
+* @Date:   2019-11-03 11:01:18
 * @Last Modified by:   zhanmingming
-* @Last Modified time: 2019-11-03 10:43:06
+* @Last Modified time: 2019-11-03 11:10:50
 */
 #include "ThreadPoolManager.h"
 #include "Mutex.h"
@@ -25,14 +25,14 @@ void func() {
 
 
 int main(void) {
-    boost::shared_ptr<ScalingThreadPool> scalingThreadPool(ThreadPoolManager::newScalingThreadPool());
+    boost::shared_ptr<LFixedThreadPool> lFixedThreadPool(ThreadPoolManager::newFixedThreadPool());
     sleep(1);
-    std::cout << scalingThreadPool->GetThreadNum() << std::endl;
+    std::cout << lFixedThreadPool->GetThreadNum() << std::endl;
     // std::cout << a.load() << std::endl;
     // for(int index = 0; index <= 100000; ++index) {
-    //     scalingThreadPool->AddTask(func);
+    //     LFixedThreadPool->AddTask(func);
     // }
-    // std::cout << scalingThreadPool->GetThreadNum() << std::endl;
+    // std::cout << LFixedThreadPool->GetThreadNum() << std::endl;
 
     // std::cout << a.load() << std::endl;
 

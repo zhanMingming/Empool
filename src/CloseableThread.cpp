@@ -45,6 +45,7 @@ CloseableThread::CloseableThread(
 : m_mutex(), m_stateGuard(m_mutex), m_state(INIT), m_isRequestClose(false), m_workFunction(workFunction),
   m_finishAction(finishAction)
 {
+    std::cout << "start CloseableThread" << std::endl;
     Init();
 }
 

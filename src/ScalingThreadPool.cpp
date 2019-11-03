@@ -25,7 +25,7 @@ namespace zhanmm {
     {
         std::cout << "start thread" << std::endl;
         boost::shared_ptr<WorkerThread> t(new WorkerThread(m_taskQueue, boost::protect(boost::bind(&ScalingThreadPool::
-                          NotifyWhenThreadsStop, this,  _1))));
+                          NotifyWhenThreadsStop, this,  _1)), true));
         m_threads.insert(std::make_pair(t->GetThreadId(), t));
     }
 

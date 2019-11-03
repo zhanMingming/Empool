@@ -34,6 +34,7 @@ WorkerThread::WorkerThread(boost::shared_ptr<TaskQueueBase> taskQueue,
         const FinishAction& action, bool isScaling)
 :m_isScaling(isScaling)
 {
+    std::cout << "start workerThread" << std::endl;
     Init(taskQueue, action);
 }
 

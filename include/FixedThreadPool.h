@@ -20,6 +20,7 @@
 #include <boost/noncopyable.hpp>
 #include <boost/scoped_ptr.hpp>
 #include <functional>
+#include <iostream>
 
 
 namespace zhanmm {
@@ -116,6 +117,7 @@ class FixedThreadPool : public boost::noncopyable {
   FixedThreadPool<TaskQueue>::~FixedThreadPool()
   {
     // keep other thread from pushing more tasks
+    std::cout << "~FixedThreadPool Stop" << std::endl;
     Stop();
   }
 
@@ -171,6 +173,7 @@ class FixedThreadPool : public boost::noncopyable {
   template<class TaskQueue>
   void FixedThreadPool<TaskQueue>::AsyncStop()
   {
+    std::cout << "FixedThreadPool AsyncStop" << std::endl;
     bool flag = false;
     if (m_isRequestStop.compare_exchange_weak(flag, true, std::memory_order_release, std::memory_order_relaxed)) {
        
