@@ -9,7 +9,7 @@
 namespace  {
 
 typedef  uint64_t  TimeValue;
-
+typedef  int       ThreadId;
 
 //#define LOG_MESSAGE(msg)  std::cout << 
 void MilliSleep(TimeValue time_in_ms)

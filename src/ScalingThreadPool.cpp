@@ -14,6 +14,7 @@ namespace zhanmm {
       m_stoppedThreadNumGuard(),
       m_addOrSubThreadNumGuard(),
       m_stateGuard(m_mutex),
+      m_addOrSubThreadCond(m_addOrSubThreadNumGuard),
       m_taskQueue(new BlockingTaskQueue()),
       m_stoppedThreadNum(0),
       m_state(INIT),
@@ -34,7 +35,10 @@ namespace zhanmm {
         m_threads.insert(std::make_pair(t->GetThreadId(), t));
         std::cout << "insert finish" << std::endl;
     }
+    
 
+    m_monitorThread.reset(new CloseableThread(
+                    BOOST_BIND(&ScalingThreadPool::HandleWorkerThread, this, _1)));
     SetState(RUNNING);
     
   }
@@ -155,9 +159,7 @@ namespace zhanmm {
   }
 
   bool  ScalingThreadPool::AddWorkerThread() {
-    if (m_taskQueue->Size() < TASK_QUEUE_SIZE_THRESHOLD || GetThreadNum() >= m_maxThreadSize || m_isRequestShutDown.load()) {
-        return false;
-    }
+
     std::cout << "add worker" << std::endl;
 
     boost::shared_ptr<WorkerThread>  newWorkerThread(new WorkerThread(m_taskQueue, boost::protect(boost::bind(&ScalingThreadPool::
@@ -165,7 +167,7 @@ namespace zhanmm {
                           IfMoreThan, this))));
     
 
-    MutexLocker   lock(m_addOrSubThreadNumGuard);
+    //MutexLocker   lock(m_addOrSubThreadNumGuard);
     //sleep(1);
     m_threads.insert(std::make_pair(newWorkerThread->GetThreadId(), newWorkerThread));
     return true;
@@ -174,7 +176,7 @@ namespace zhanmm {
 
   bool ScalingThreadPool::SubWorkerThread(int threadId) {
     std::cout << "SubWorkerThread : " << threadId << std::endl;
-    MutexLocker lock(m_addOrSubThreadNumGuard);
+    //MutexLocker lock(m_addOrSubThreadNumGuard);
     std::unordered_map<int, boost::shared_ptr<WorkerThread> >::iterator iter = m_threads.find(threadId);
     if (iter != m_threads.end()) {
         m_threads.erase(iter);
@@ -183,8 +185,32 @@ namespace zhanmm {
     }
     return true;
   }
+
+
+  void ScalingThreadPool::AddWorkerThreadIdToSubVector(int threadId) {
+    MutexLocker lock(m_addOrSubThreadNumGuard);
+    m_subWorkerThreadId.push_back(threadId);
+  }
   
   
+  void ScalingThreadPool::HandleWorkerThread(const Function& checkFunc) {
+    while (true) {
+      checkFunc();
+
+      MutexLocker lock(m_addOrSubThreadNumGuard);
+      if (m_taskQueue->Size() > TASK_QUEUE_SIZE_THRESHOLD && m_threads.size() < m_maxThreadSize && !m_isRequestShutDown.load()) {
+          AddWorkerThread();
+      }
+      if (!m_subWorkerThreadId.empty()) {
+        for(std::vector<ThreadId>::iterator iter = m_subWorkerThreadId.begin(); iter != m_subWorkerThreadId.end(); ++iter) {
+          SubWorkerThread(*iter);
+        }
+        m_subWorkerThreadId.clear();
+      }
+    }
+  }
+
+
   boost::shared_ptr<TaskBase> ScalingThreadPool::DoAddTask(boost::shared_ptr<TaskBase> task)
   {
     if (m_isRequestShutDown.load())
@@ -197,7 +223,7 @@ namespace zhanmm {
     }
     
     m_taskQueue->Push(task);
-    AddWorkerThread();
+    handleWorkerThread();
     return task;
   }
 
@@ -206,7 +232,7 @@ namespace zhanmm {
   {
     // not request shutdown
     if (!m_isRequestShutDown.load()) {
-        SubWorkerThread(threadId);
+        AddWorkerThreadIdToSubVector(threadId);
         return;
     }
 

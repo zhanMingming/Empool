@@ -29,6 +29,7 @@ public:
     void AsyncClose();
     bool IsRequestClose() const;
     int GetThreadId() const;
+    //bool IsClose() const;
 
 protected:
     enum State {
@@ -51,7 +52,7 @@ private:
 
 private:
     State m_state;
-    Mutex m_mutex;
+    mutable Mutex m_mutex;
     mutable ConditionVariable m_stateGuard;
     std::atomic_bool m_isRequestClose;
     WorkFunction m_workFunction;

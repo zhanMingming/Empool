@@ -62,16 +62,20 @@ int CloseableThread::GetThreadId() const
 
 void CloseableThread::AsyncClose() 
 {
-    m_isRequestClose.store(true);
+    bool flag = false;
+    m_isRequestClose.compare_exchange_weak(flag, true, std::memory_order_release, std::memory_order_relaxed);
+
 }
 
 
 void CloseableThread::Close()
 {
-    m_isRequestClose.store(true);
-    ConditionWaitLocker l(m_stateGuard,
+    bool flag = false;
+    if (m_isRequestClose.compare_exchange_weak(flag, true, std::memory_order_release, std::memory_order_relaxed)) {
+        ConditionWaitLocker l(m_stateGuard,
         BOOST_BIND(not1(mem_fun(&CloseableThread::IsFinished)),
                       this));
+    }
 }
 
 
@@ -123,8 +127,11 @@ void CloseableThread::ProcessError(const std::exception& e)
 //     return IsFinished();
 // }
 
+
+
 bool CloseableThread::IsFinished() const
 {
+    MutexLocker lock(m_mutex);
     return m_state == FINISHED;
 }
 
@@ -137,6 +144,7 @@ bool CloseableThread::IsFinished() const
 
 void CloseableThread::SetState(const State state)
 {
+    MutexLocker lock(m_mutex);
     m_state = state;
 }
 

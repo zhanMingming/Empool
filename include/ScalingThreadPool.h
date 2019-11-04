@@ -7,6 +7,7 @@
 #include "EndTask.h"
 #include "ConditionVariable.h"
 #include "Mutex.h"
+#include "Util.h"
 // #include "Atomic.h"
 //#include "FunctorFutureTask.h"
 //#include "TimerTaskHandler.h"
@@ -22,6 +23,7 @@
 #include <functional>
 #include <unordered_map>
 
+
 /*
 1.初始化 先new 出 minThreadSize 的线程。
 2. 何时增加线程， 当taskQueue 累计的任务 达到某个阈值，则增加线程，保证当前线程数 < maxThreadSize
@@ -32,6 +34,8 @@
 namespace zhanmm {
 
 const int  TASK_QUEUE_SIZE_THRESHOLD = 1024;
+
+typedef boost::function<void()> Function;
 
 class ScalingThreadPool : public boost::noncopyable {
   private:
@@ -79,6 +83,8 @@ class ScalingThreadPool : public boost::noncopyable {
     bool CheckIsRequestShutDown() const;
     bool AddWorkerThread();
     bool SubWorkerThread(int threadId);
+    void AddWorkerThreadIdToSubVector(int threadId);
+    void HandleWorkerThread();
     // struct ThreadPoolTimerTask;
 
     // typedef std::vector<boost::shared_ptr<WorkerThread> > WorkerThreads;
@@ -96,6 +102,8 @@ class ScalingThreadPool : public boost::noncopyable {
     Mutex m_stoppedThreadNumGuard;
 
     mutable Mutex m_addOrSubThreadNumGuard;
+
+    mutable ConditionVariable m_addOrSubThreadCond;
     
     size_t m_stoppedThreadNum;
     
@@ -107,8 +115,12 @@ class ScalingThreadPool : public boost::noncopyable {
     
     //std::vector<boost::shared_ptr<WorkerThread> >  m_threads;
     
-    std::unordered_map<int, boost::shared_ptr<WorkerThread> > m_threads;
+    std::unordered_map<ThreadId, boost::shared_ptr<WorkerThread> > m_threads;
     mutable Mutex m_mutex;
+    
+    std::vector<ThreadId>  m_subWorkerThreadId;
+
+    std::scoped_ptr<CloseableThread>  m_monitorThread;
   };
 
 
