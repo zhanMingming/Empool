@@ -45,6 +45,7 @@ Thread::~Thread()
         std::cout << "Thread join : " <<  GetThreadId() << std::endl;
         pthread_join(m_threadData, NULL);
         std::cout << "Thread join finish" << std::endl;
+        m_isStart = false;
     }
 }
 
