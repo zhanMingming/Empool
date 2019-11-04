@@ -60,8 +60,8 @@ namespace zhanmm {
 
   bool ScalingThreadPool::IfMoreThan() const
   {
-    std::cout << "ifmorethen:" << GetThreadNum() << ":"<< GetCorePoolSize() << std::endl;
-    std::cout << "IfMoreThan:" << (GetThreadNum() > GetCorePoolSize()) << std::endl;
+    std::cout << "ifmorethan:" << GetThreadNum() << ":"<< GetCorePoolSize() << std::endl;
+    //std::cout << "IfMoreThan:" << (GetThreadNum() > GetCorePoolSize()) << std::endl;
     return GetThreadNum() > GetCorePoolSize();
   }
   
