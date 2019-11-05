@@ -41,7 +41,7 @@ int main(void) {
     std::cout << scalingThreadPool->GetThreadNum() << std::endl;
 
 
-    //sleep(35);
+    sleep(35);
     std::cout << a.load() << std::endl;
     std::cout << scalingThreadPool->GetThreadNum() << std::endl;
 
