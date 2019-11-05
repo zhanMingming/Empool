@@ -6,6 +6,14 @@ namespace zhanmm {
   //typedef ScalingThreadPool<> LScalingThreadPool;
 
   // Implementation
+namespace {
+struct NoOp {
+    void operator()(int threadId)
+    {
+        std::cout << "Noop" << std::endl;
+    }
+};
+}
   
   ScalingThreadPool::ScalingThreadPool(const size_t minThreadSize,  const size_t maxThreadSize)
     : m_mutex(),
@@ -38,7 +46,7 @@ namespace zhanmm {
     
 
     m_monitorThread.reset(new CloseableThread(
-                    boost::bind(&ScalingThreadPool::HandleWorkerThread, this, _1)));
+                    boost::bind(&ScalingThreadPool::HandleWorkerThread, this, _1), NoOp()));
     SetState(RUNNING);
     
   }
@@ -49,7 +57,7 @@ namespace zhanmm {
     std::cout << "~ScalingThreadPool" << std::endl;
     // keep other thread from pushing more tasks
     ShutDownNow();
-    m_monitorThread->Close();
+    m_monitorThread->AsyncClose();
   }
 
   size_t  ScalingThreadPool::GetCorePoolSize() const 

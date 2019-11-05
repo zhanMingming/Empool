@@ -131,7 +131,7 @@ void CloseableThread::ProcessError(const std::exception& e)
 
 bool CloseableThread::IsFinished() const
 {
-    MutexLocker lock(m_mutex);
+    //MutexLocker lock(m_mutex);
     return m_state == FINISHED;
 }
 
@@ -144,13 +144,16 @@ bool CloseableThread::IsFinished() const
 
 void CloseableThread::SetState(const State state)
 {
+    std::cout << "set state" << std::endl;
     MutexLocker lock(m_mutex);
+    std::cout << "alredy set state" << std::endl;
     m_state = state;
 }
 
 void CloseableThread::NotifyFinished()
 {
     SetState(FINISHED);
+    std::cout << "CloseableThread : set FINISHED" << std::endl;
     ConditionNotifyAllLocker l(m_stateGuard,
         BOOST_BIND(&CloseableThread::IsRequestClose, this));
 }
