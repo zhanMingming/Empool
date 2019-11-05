@@ -38,7 +38,7 @@ namespace zhanmm {
     
 
     m_monitorThread.reset(new CloseableThread(
-                    BOOST_BIND(&ScalingThreadPool::HandleWorkerThread, this, _1)));
+                    boost::bind(&ScalingThreadPool::HandleWorkerThread, this, _1)));
     SetState(RUNNING);
     
   }
@@ -49,6 +49,7 @@ namespace zhanmm {
     std::cout << "~ScalingThreadPool" << std::endl;
     // keep other thread from pushing more tasks
     ShutDownNow();
+    m_monitorThread->Close();
   }
 
   size_t  ScalingThreadPool::GetCorePoolSize() const 
@@ -191,16 +192,36 @@ namespace zhanmm {
     MutexLocker lock(m_addOrSubThreadNumGuard);
     m_subWorkerThreadId.push_back(threadId);
   }
+
+
+
+  bool ScalingThreadPool::OJudgeFunc() {
+    return !JudgeFunc();
+  }
+
+  bool ScalingThreadPool::JudgeFunc() {
+    
+    return ((m_taskQueue->Size() > TASK_QUEUE_SIZE_THRESHOLD && m_threads.size() < m_maxThreadSize) 
+      || !m_subWorkerThreadId.empty());
+  }
   
   
   void ScalingThreadPool::HandleWorkerThread(const Function& checkFunc) {
     while (true) {
       checkFunc();
 
-      MutexLocker lock(m_addOrSubThreadNumGuard);
-      if (m_taskQueue->Size() > TASK_QUEUE_SIZE_THRESHOLD && m_threads.size() < m_maxThreadSize && !m_isRequestShutDown.load()) {
-          AddWorkerThread();
+      //MutexLocker lock(m_addOrSubThreadNumGuard);
+      ConditionWaitLocker cond(m_addOrSubThreadCond);
+      //m_addOrSubThreadCond.wait();
+      if (!cond.TimeWait(boost::bind(&ScalingThreadPool::OJudgeFunc, this), 30* 1000)) {
+          std::cout << "handleWorkerThread wait too long so exit" << std::endl;
       }
+      std::cout << "m_monitorThread be wake up" << std::endl;
+      if (m_taskQueue->Size() > TASK_QUEUE_SIZE_THRESHOLD && m_threads.size() < m_maxThreadSize) {
+        AddWorkerThread();
+      }
+      
+      
       if (!m_subWorkerThreadId.empty()) {
         for(std::vector<ThreadId>::iterator iter = m_subWorkerThreadId.begin(); iter != m_subWorkerThreadId.end(); ++iter) {
           SubWorkerThread(*iter);
@@ -223,7 +244,7 @@ namespace zhanmm {
     }
     
     m_taskQueue->Push(task);
-    handleWorkerThread();
+    ConditionNotifyLocker cond(m_addOrSubThreadCond, boost::bind(&ScalingThreadPool::JudgeFunc, this));
     return task;
   }
 
@@ -233,6 +254,7 @@ namespace zhanmm {
     // not request shutdown
     if (!m_isRequestShutDown.load()) {
         AddWorkerThreadIdToSubVector(threadId);
+        ConditionNotifyLocker cond(m_addOrSubThreadCond, boost::bind(&ScalingThreadPool::JudgeFunc, this));
         return;
     }
 
@@ -240,6 +262,7 @@ namespace zhanmm {
     {
       MutexLocker l(m_stoppedThreadNumGuard);
       stoppedThreadNum = ++m_stoppedThreadNum;
+      std::cout << "stopThreadNum:" << stoppedThreadNum << std::endl;
     }
 
     if (stoppedThreadNum >= m_threads.size())

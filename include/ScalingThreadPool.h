@@ -84,7 +84,9 @@ class ScalingThreadPool : public boost::noncopyable {
     bool AddWorkerThread();
     bool SubWorkerThread(int threadId);
     void AddWorkerThreadIdToSubVector(int threadId);
-    void HandleWorkerThread();
+    void HandleWorkerThread(const Function& checkFunc);
+    bool OJudgeFunc();
+    bool JudgeFunc();
     // struct ThreadPoolTimerTask;
 
     // typedef std::vector<boost::shared_ptr<WorkerThread> > WorkerThreads;
@@ -120,7 +122,7 @@ class ScalingThreadPool : public boost::noncopyable {
     
     std::vector<ThreadId>  m_subWorkerThreadId;
 
-    std::scoped_ptr<CloseableThread>  m_monitorThread;
+    boost::scoped_ptr<CloseableThread>  m_monitorThread;
   };
 
 
