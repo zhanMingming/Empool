@@ -144,9 +144,9 @@ bool CloseableThread::IsFinished() const
 
 void CloseableThread::SetState(const State state)
 {
-    std::cout << "set state" << std::endl;
-    MutexLocker lock(m_mutex);
-    std::cout << "alredy set state" << std::endl;
+    //std::cout << "set state" << std::endl;
+    //MutexLocker lock(m_mutex);
+    //std::cout << "alredy set state" << std::endl;
     m_state = state;
 }
 

@@ -1,0 +1,4 @@
+Log file created at: 2019/11/07 00:20:50
+Running on machine: bogon
+Log line format: [IWEF]mmdd hh:mm:ss.uuuuuu threadid file:line] msg
+E1107 00:20:50.910935 331097536 ScalingThreadPoolExample.cpp:37] ERROR, GOOGLE!
