@@ -8,147 +8,139 @@ using namespace zhanmm;
 using namespace boost;
 using namespace std;
 
-void MilliSleep(TimeValue time_in_ms)
+namespace
 {
-  struct timeval timeout;
-  timeout.tv_sec = time_in_ms / 1000;
-  timeout.tv_usec = (time_in_ms % 1000) * 1000;
-  (void) select(0, NULL, NULL, NULL, &timeout);
-}
-
-
-namespace {
-  class ScheduledThreadPoolTestSuite : public testing::Test
-  {
-  protected:
-    atomic<int> counter;
-
-    ScheduledThreadPoolTestSuite()
-    : counter(0)
-    {}
-
-    virtual void SetUp()
+    class ScheduledThreadPoolTestSuite : public testing::Test
     {
-      counter = 0;
-    }
-  };
+    protected:
+        atomic<int> counter;
 
-  struct TestScheduledThreadPoolTask : public TimerTask
-  {
-    atomic<int>& counter;
+        ScheduledThreadPoolTestSuite()
+            : counter(0)
+        {}
 
-    TestScheduledThreadPoolTask(atomic<int>& cnt)
-    : counter(cnt)
-    {}
+        virtual void SetUp()
+        {
+            counter = 0;
+        }
+    };
 
-    virtual void DoRun()
+    struct TestScheduledThreadPoolTask : public TimerTask
     {
-      ++counter;
-    }
-  };
+        atomic<int> &counter;
+
+        TestScheduledThreadPoolTask(atomic<int> &cnt)
+            : counter(cnt)
+        {}
+
+        virtual void DoRun()
+        {
+            ++counter;
+        }
+    };
 }  //namespace
 
 
 
 TEST_F(ScheduledThreadPoolTestSuite, test_Construction)
 {
-  {
-    ScheduledThreadPool threadPool;
-    EXPECT_EQ(static_cast<size_t>(4), threadPool.GetThreadNum());
-  }
-  
-  {
-    ScheduledThreadPool threadPool(2);
-    EXPECT_EQ(static_cast<size_t>(2), threadPool.GetThreadNum());
-  }
+    {
+        ScheduledThreadPool threadPool;
+        EXPECT_EQ(static_cast<size_t>(4), threadPool.GetThreadNum());
+    }
+
+    {
+        ScheduledThreadPool threadPool(2);
+        EXPECT_EQ(static_cast<size_t>(2), threadPool.GetThreadNum());
+    }
 }
 
 TEST_F(ScheduledThreadPoolTestSuite, test_AddCronTimerTask)
 {
-  //atomic<int> counter(0);
-  {
-    ScheduledThreadPool threadPool(4);
-    threadPool.AddCronTimerTask(boost::shared_ptr<TimerTask>(new TestScheduledThreadPoolTask(counter)), 200);
-    ASSERT_EQ(0, counter);
-    MilliSleep(300);
-    //timerTaskHandler.Stop();
+    //atomic<int> counter(0);
+    {
+        ScheduledThreadPool threadPool(4);
+        threadPool.AddCronTimerTask(boost::shared_ptr<TimerTask>(new TestScheduledThreadPoolTask(counter)), 200);
+        ASSERT_EQ(0, counter);
+        MilliSleep(300);
+        //timerTaskHandler.Stop();
+        ASSERT_EQ(1, counter);
+    }
     ASSERT_EQ(1, counter);
-  }
-  ASSERT_EQ(1, counter);
 }
 
 TEST_F(ScheduledThreadPoolTestSuite, test_AddCronTimerTask_multi)
 {
-  //atomic<int> counter(0);
-  {
-    ScheduledThreadPool threadPool(4);
-    threadPool.AddCronTimerTask(boost::shared_ptr<TimerTask>(new TestScheduledThreadPoolTask(counter)), 200);
-    threadPool.AddCronTimerTask(boost::shared_ptr<TimerTask>(new TestScheduledThreadPoolTask(counter)), 200);
+    //atomic<int> counter(0);
+    {
+        ScheduledThreadPool threadPool(4);
+        threadPool.AddCronTimerTask(boost::shared_ptr<TimerTask>(new TestScheduledThreadPoolTask(counter)), 200);
+        threadPool.AddCronTimerTask(boost::shared_ptr<TimerTask>(new TestScheduledThreadPoolTask(counter)), 200);
 
-    ASSERT_EQ(0, counter);
-    MilliSleep(300);
-    //timerTaskHandler.Stop();
+        ASSERT_EQ(0, counter);
+        MilliSleep(300);
+        //timerTaskHandler.Stop();
+        ASSERT_EQ(2, counter);
+    }
     ASSERT_EQ(2, counter);
-  }
-  ASSERT_EQ(2, counter);
 }
 
 
 
 TEST_F(ScheduledThreadPoolTestSuite, test_ShutDown)
 {
-  //atomic<int> counter(0);
-  {
-    ScheduledThreadPool threadPool(4);
-    threadPool.AddCronTimerTask(boost::shared_ptr<TimerTask>(new TestScheduledThreadPoolTask(counter)), 200);
-    threadPool.AddCronTimerTask(boost::shared_ptr<TimerTask>(new TestScheduledThreadPoolTask(counter)), 200);
+    //atomic<int> counter(0);
+    {
+        ScheduledThreadPool threadPool(4);
+        threadPool.AddCronTimerTask(boost::shared_ptr<TimerTask>(new TestScheduledThreadPoolTask(counter)), 200);
+        threadPool.AddCronTimerTask(boost::shared_ptr<TimerTask>(new TestScheduledThreadPoolTask(counter)), 200);
 
-    ASSERT_EQ(0, counter);
-    MilliSleep(300);
-    threadPool.ShutDown();
-    //timerTaskHandler.Stop();
+        ASSERT_EQ(0, counter);
+        MilliSleep(300);
+        threadPool.ShutDown();
+        //timerTaskHandler.Stop();
+        ASSERT_EQ(2, counter);
+
+    }
     ASSERT_EQ(2, counter);
-
-  }
-  ASSERT_EQ(2, counter);
 }
 
 TEST_F(ScheduledThreadPoolTestSuite, test_ShutDown_multi)
 {
-  //atomic<int> counter(0);
-  {
-    ScheduledThreadPool threadPool(4);
-    threadPool.AddCronTimerTask(boost::shared_ptr<TimerTask>(new TestScheduledThreadPoolTask(counter)), 200);
-    threadPool.AddCronTimerTask(boost::shared_ptr<TimerTask>(new TestScheduledThreadPoolTask(counter)), 200);
+    //atomic<int> counter(0);
+    {
+        ScheduledThreadPool threadPool(4);
+        threadPool.AddCronTimerTask(boost::shared_ptr<TimerTask>(new TestScheduledThreadPoolTask(counter)), 200);
+        threadPool.AddCronTimerTask(boost::shared_ptr<TimerTask>(new TestScheduledThreadPoolTask(counter)), 200);
 
-    ASSERT_EQ(0, counter);
-    MilliSleep(300);
-    threadPool.ShutDown();
-    //timerTaskHandler.Stop();
+        ASSERT_EQ(0, counter);
+        MilliSleep(300);
+        threadPool.ShutDown();
+        //timerTaskHandler.Stop();
+        ASSERT_EQ(2, counter);
+        threadPool.ShutDown();
+
+    }
     ASSERT_EQ(2, counter);
-    threadPool.ShutDown();
-
-  }
-  ASSERT_EQ(2, counter);
 }
 
 TEST_F(ScheduledThreadPoolTestSuite, test_ShutDown_Task)
 {
-  //atomic<int> counter(0);
-  {
-    ScheduledThreadPool threadPool(4);
-    threadPool.AddCronTimerTask(boost::shared_ptr<TimerTask>(new TestScheduledThreadPoolTask(counter)), 200);
-    threadPool.AddCronTimerTask(boost::shared_ptr<TimerTask>(new TestScheduledThreadPoolTask(counter)), 200);
-    threadPool.ShutDown();
-    ASSERT_EQ(0, counter);
-    MilliSleep(300);
-    //threadPool.ShutDown();
-    //timerTaskHandler.Stop();
-    ASSERT_EQ(0, counter);
-    //threadPool.ShutDown();
+    //atomic<int> counter(0);
+    {
+        ScheduledThreadPool threadPool(4);
+        threadPool.AddCronTimerTask(boost::shared_ptr<TimerTask>(new TestScheduledThreadPoolTask(counter)), 200);
+        threadPool.AddCronTimerTask(boost::shared_ptr<TimerTask>(new TestScheduledThreadPoolTask(counter)), 200);
+        threadPool.ShutDown();
+        ASSERT_EQ(0, counter);
+        MilliSleep(300);
+        //threadPool.ShutDown();
+        //timerTaskHandler.Stop();
+        ASSERT_EQ(0, counter);
+        //threadPool.ShutDown();
 
-  }
-  ASSERT_EQ(0, counter);
+    }
+    ASSERT_EQ(0, counter);
 }
 
 
@@ -157,10 +149,10 @@ TEST_F(ScheduledThreadPoolTestSuite, test_ShutDown_Task)
 /*
 namespace {
   Mutex GLOBAL_MUTEX;
-  
+
   struct IncTask : public TaskBase {
     int& counter;
-    
+
     IncTask(int& i) : counter(i) {}
 
     virtual void DoRun()
@@ -213,7 +205,7 @@ namespace {
     SleepAndIncTask(int& i)
       : IncTask(i)
     {}
-    
+
     virtual void DoRun()
     {
       sleep(1);
@@ -271,7 +263,7 @@ namespace {
     StopFunction(ScheduledThreadPool& threadPool)
       : m_threadPool(threadPool)
     {}
-    
+
     void operator()()
     {
       m_threadPool.Stop();
@@ -293,7 +285,7 @@ namespace {
     LoopSleepAndIncTask(int& i)
       : SleepAndIncTask(i)
     {}
-    
+
     virtual void DoRun()
     {
       for (int i = 0; i < 2; ++i)
@@ -480,7 +472,7 @@ TEST(ScheduledThreadPool, test_StopNow_when_TaskQueue_empty)
 //   }
 //   ASSERT_EQ(0, counter);
 
-//   { 
+//   {
 //     boost::shared_ptr<TaskBase> task(new IncTask(counter));
 //     ScheduledThreadPool threadPool;
 //     task = threadPool.AddIntervalTask(task, 200, false);
@@ -496,7 +488,8 @@ TEST(ScheduledThreadPool, test_StopNow_when_TaskQueue_empty)
 //   ASSERT_EQ(0, counter);
 // }
 */
-GTEST_API_ int main(int argc, char ** argv) {
+GTEST_API_ int main(int argc, char **argv)
+{
     testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
 }

@@ -8,37 +8,40 @@
 #include <cassert>
 #include <atomic>
 
-namespace zhanmm {
-
-enum  State
+namespace zhanmm
 {
-    BROKEN  =  -2,
-    TIMEOUT = -1,
-    SUCCESS  = 0
-};
+
+    enum  State
+    {
+        BROKEN  =  -2,
+        TIMEOUT = -1,
+        SUCCESS  = 0
+    };
 
 
 
-class CyclicBarrier : private boost::noncopyable {
-public:
-    CyclicBarrier(const int count);
-    ~CyclicBarrier() {}
+    class CyclicBarrier : private boost::noncopyable
+    {
+    public:
+        CyclicBarrier(const int count);
+        ~CyclicBarrier() {}
 
 
-    int Await();
-    // millseconds
-    int Await(int time_ms);
+        int Await();
+        // millseconds
+        int Await(int time_ms);
 
-    void Reset();
+        void Reset();
 
-private:
-    const int m_max_count;
-    int  m_count;
-    int  m_reset_index;
-    int  m_barrier_cond;
-    ConditionVariable m_condition_variable;
-    Mutex m_mutex;
-};
+    private:
+        const int m_max_count;
+        int  m_count;
+        int  m_reset_index;
+        int  m_barrier_cond;
+        Mutex m_mutex;
+        ConditionVariable m_condition_variable;
+    
+    };
 
 }  //zhanmm
 

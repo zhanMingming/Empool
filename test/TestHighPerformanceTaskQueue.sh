@@ -1,1 +1,0 @@
-g++ TestHighPerformanceTaskQueue.cpp ../src/TaskQueue.cpp ../src/Mutex.cpp  ../src/HighPerformanceTaskQueue.cpp ../src/ConditionVariable.cpp ../src/System.cpp  ../src/Thread.cpp ../src/TaskBase.cpp -o main  -I ../include/  -lgtest -std=c++11

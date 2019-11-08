@@ -13,50 +13,51 @@
 #include <memory>
 #include <exception>
 
-namespace zhanmm {
+namespace zhanmm
+{
 
-const int MAX_WAIT_IN_MS = 1000 * 30;
+    const int MAX_WAIT_IN_MS = 1000 * 30;
 
-class ScalingThreadPool;
+    //class ScalingThreadPool;
 
-class WorkerThread : public boost::noncopyable {
-private:
-    enum State {
-        INIT,
-        RUNNING,
-        FINISHED,
+    class WorkerThread : public boost::noncopyable
+    {
+    private:
+        enum State
+        {
+            INIT,
+            RUNNING,
+            FINISHED,
+        };
+        
+    public:
+        //typedef boost::shared_ptr<WorkerThread> Ptr;
+        typedef CloseableThread::FinishAction FinishAction;
+        typedef CloseableThread::Function Function;
+        typedef boost::function<bool()> JudgeAction;
+
+
+        WorkerThread(boost::shared_ptr<TaskQueueBase> taskQueue, const JudgeAction  judge);
+        WorkerThread(boost::shared_ptr<TaskQueueBase> taskQueue, const FinishAction &action, const JudgeAction  judge);
+        ~WorkerThread();
+        int GetThreadId() const;
+
+        void Close();
+        void AsyncClose();
+    private:
+        void Init(boost::shared_ptr<TaskQueueBase> taskQueue, const FinishAction &action);
+        void ProcessError(const std::exception &e);
+        void WorkFunction(const Function &checkFunc);
+        void GetTask();
+        bool GetTask(boost::shared_ptr<TaskBase> &task, int wait_in_ms);
+
+        const JudgeAction  m_judge;
+        boost::shared_ptr<TaskQueueBase> m_taskQueue;
+        boost::shared_ptr<TaskBase>  m_runningTask;
+        mutable Mutex m_runningTaskGuard;
+        boost::scoped_ptr<CloseableThread> m_thread; // Thread must be the last variable
+
     };
-
-public:
-    //typedef boost::shared_ptr<WorkerThread> Ptr;
-    typedef CloseableThread::FinishAction FinishAction;
-    typedef CloseableThread::Function Function;
-    typedef boost::function<bool()> JudgeAction;
-
-
-    WorkerThread(boost::shared_ptr<TaskQueueBase> taskQueue, const JudgeAction  judge, bool isScaling = false);
-    WorkerThread(boost::shared_ptr<TaskQueueBase> taskQueue, const FinishAction& action, const JudgeAction  judge, bool isScaling = false);
-    ~WorkerThread();
-    int GetThreadId() const;
-
-    void Close();
-    void AsyncClose();
-private:
-    void Init(boost::shared_ptr<TaskQueueBase> taskQueue, const FinishAction& action);
-    void ProcessError(const std::exception& e);
-    void WorkFunction(const Function& checkFunc);
-    void GetTask();
-    bool GetTask(boost::shared_ptr<TaskBase>& task, int wait_in_ms);
-
-    bool m_isScaling;
-    int  m_corePoolSize;
-    const JudgeAction  m_judge;
-    boost::shared_ptr<TaskQueueBase> m_taskQueue;
-    boost::shared_ptr<TaskBase>  m_runningTask;
-    mutable Mutex m_runningTaskGuard;
-    boost::scoped_ptr<CloseableThread> m_thread; // Thread must be the last variable
-    
-};
 
 
 }  // namespace tpool

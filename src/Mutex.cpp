@@ -9,7 +9,7 @@ using namespace zhanmm;
 using namespace std;
 
 Mutex::Mutex()
-: m_isInit(false)
+    : m_isInit(false)
 {
     Init();
 }
@@ -69,7 +69,8 @@ bool Mutex::TryLock()
     }
 }
 
-pthread_mutex_t*  Mutex::getMutexPtr() {
+pthread_mutex_t  *Mutex::getMutexPtr()
+{
     return &m_mutex;
 }
 
@@ -89,8 +90,8 @@ void Mutex::Init()
 }
 
 
-MutexLocker::MutexLocker(Mutex& m)
-: m_mutex(m)
+MutexLocker::MutexLocker(Mutex &m)
+    : m_mutex(m)
 {
     m_mutex.Lock();
 }

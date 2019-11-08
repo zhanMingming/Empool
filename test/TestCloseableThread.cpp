@@ -11,27 +11,28 @@ using namespace std;
 
 typedef ::boost::function<void()> CloseFunction;
 
-namespace {
-
-void NoOpWork(CloseFunction)
-{}
-
-void NoOp()
-{}
-
-class IncNumWork
+namespace
 {
-    int& m_num;
-public:
-    IncNumWork(int& num)
-    : m_num(num)
+
+    void NoOpWork(CloseFunction)
     {}
 
-    void operator() (::zhanmm::CloseableThread::Function)
+    void NoOp()
+    {}
+
+    class IncNumWork
     {
-        ++m_num;
-    }
-};
+        int &m_num;
+    public:
+        IncNumWork(int &num)
+            : m_num(num)
+        {}
+
+        void operator() (::zhanmm::CloseableThread::Function)
+        {
+            ++m_num;
+        }
+    };
 
 }
 
@@ -56,23 +57,24 @@ TEST(CloseableThread, test_normal_usage)
     ASSERT_EQ(1, num);
 }
 
-namespace {
-
-struct TestWork
+namespace
 {
-    int& counter;
 
-    TestWork(int& i)
-    : counter(i)
-    {}
-
-    void operator() (::zhanmm::CloseableThread::Function CloseFunction)
+    struct TestWork
     {
-        sleep(2);
-        CloseFunction();
-        ++counter;
-    }
-};
+        int &counter;
+
+        TestWork(int &i)
+            : counter(i)
+        {}
+
+        void operator() (::zhanmm::CloseableThread::Function CloseFunction)
+        {
+            sleep(2);
+            CloseFunction();
+            ++counter;
+        }
+    };
 
 }
 
@@ -102,21 +104,22 @@ TEST(CloseableThread, test_multiple_Close)
 }
 
 
-namespace {
-
-struct FinishAction
+namespace
 {
-    int& counter;
 
-    FinishAction(int& i)
-    : counter(i)
-    {}
-
-    void operator()()
+    struct FinishAction
     {
-        ++counter;
-    }
-};
+        int &counter;
+
+        FinishAction(int &i)
+            : counter(i)
+        {}
+
+        void operator()()
+        {
+            ++counter;
+        }
+    };
 
 }
 
@@ -149,7 +152,8 @@ TEST(CloseableThread, test_FinishAcion_execute_before_Finished)
 }
 
 
-GTEST_API_ int main(int argc, char ** argv) {
+GTEST_API_ int main(int argc, char **argv)
+{
     testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
 }

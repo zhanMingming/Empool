@@ -2,7 +2,7 @@
 * @Author: zhanmingming
 * @Date:   2019-10-04 18:52:35
 * @Last Modified by:   zhanmingming
-* @Last Modified time: 2019-10-04 20:24:57
+* @Last Modified time: 2019-11-09 00:50:09
 */
 #include <iostream>
 #include <thread>
@@ -12,12 +12,14 @@ using namespace zhanmm;
 
 CyclicBarrier barrier(2);
 
-void doWork() {
+void doWork()
+{
     barrier.Await();
     std::cout << "thread1 common" << std::endl;
 }
 
-int main() {
+int main()
+{
     // CyclicBarrier barrier(2);
     std::thread th1(doWork);
     std::thread th2(doWork);

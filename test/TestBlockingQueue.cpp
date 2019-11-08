@@ -110,32 +110,34 @@ TEST(BlockingQueueTestSuite, test_Front)
 }
 
 
-namespace {
+namespace
+{
 
-template<typename T>
-struct PushThreadFunc {
-    const vector<T>& elems;
-    BlockingQueue<T>& blocking_queue;
-
-    PushThreadFunc(const vector<T>& e, BlockingQueue<T>& q)
-    : elems(e), blocking_queue(q)
-    {}
-
-    virtual ~PushThreadFunc() {}
-
-    virtual void DoRun()
+    template<typename T>
+    struct PushThreadFunc
     {
-        for (size_t i = 0; i < elems.size(); ++i)
+        const vector<T> &elems;
+        BlockingQueue<T> &blocking_queue;
+
+        PushThreadFunc(const vector<T> &e, BlockingQueue<T> &q)
+            : elems(e), blocking_queue(q)
+        {}
+
+        virtual ~PushThreadFunc() {}
+
+        virtual void DoRun()
         {
-            blocking_queue.Push(elems[i]);
+            for (size_t i = 0; i < elems.size(); ++i)
+            {
+                blocking_queue.Push(elems[i]);
+            }
         }
-    }
 
-    void operator()()
-    {
-        DoRun();
-    }
-};
+        void operator()()
+        {
+            DoRun();
+        }
+    };
 
 }
 
@@ -168,27 +170,29 @@ TEST(BlockingQueueTestSuite, test_concurrent_Push)
     ASSERT_EQ(array_sum * 3, queue_sum);
 }
 
-namespace {
+namespace
+{
 
-template<typename T>
-struct PopThreadFunc {
-    size_t pop_count;
-    BlockingQueue<T>& blocking_queue;
-
-    PopThreadFunc(size_t cnt, BlockingQueue<T>& q)
-    : pop_count(cnt), blocking_queue(q)
-    {}
-
-    void operator()()
+    template<typename T>
+    struct PopThreadFunc
     {
-        for (size_t i = 0; i < pop_count; ++i)
-        {
-            (void) blocking_queue.Front();
-            (void) blocking_queue.Pop();
-        }
-    }
+        size_t pop_count;
+        BlockingQueue<T> &blocking_queue;
 
-};
+        PopThreadFunc(size_t cnt, BlockingQueue<T> &q)
+            : pop_count(cnt), blocking_queue(q)
+        {}
+
+        void operator()()
+        {
+            for (size_t i = 0; i < pop_count; ++i)
+            {
+                (void) blocking_queue.Front();
+                (void) blocking_queue.Pop();
+            }
+        }
+
+    };
 
 }
 
@@ -207,7 +211,8 @@ TEST(BlockingQueueTestSuite, test_concurrent_Push_Pop)
     }
 }
 
-GTEST_API_ int main(int argc, char ** argv) {
+GTEST_API_ int main(int argc, char **argv)
+{
     testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
 }

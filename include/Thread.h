@@ -12,94 +12,99 @@
 #include <boost/noncopyable.hpp>
 #include <boost/scoped_ptr.hpp>
 #include <iostream>
-    
 
-namespace zhanmm {
-//typedef  unsigned long long  pthread_id;
 
-class Thread : private boost::noncopyable {
-public:
-    template<class Func>
-    explicit Thread(const Func& f);
+namespace zhanmm
+{
+    //typedef  unsigned long long  pthread_id;
 
-    ~Thread();
+    class Thread : private boost::noncopyable
+    {
+    public:
+        template<class Func>
+        explicit Thread(const Func &f);
 
-    int GetThreadId() const { 
-        while(!m_threadId) {
-            MicroSleep(10);
+        ~Thread();
+
+        int GetThreadId() const
+        {
+            while(!m_threadId)
+            {
+                MicroSleep(10);
+            }
+            return m_threadId;
         }
-        return m_threadId;
-    }
 
-private:
-    template<class Func>
-    static void* ThreadFunction(void* arg);
+    private:
+        template<class Func>
+        static void *ThreadFunction(void *arg);
 
-    void ProcessCreateError(const int error);
-    static void ProcessException(const std::exception& e);
-    static void ProcessUnknownException();
+        void ProcessCreateError(const int error);
+        static void ProcessException(const std::exception &e);
+        static void ProcessUnknownException();
 
-    template<typename Func>
-    struct Args {
-        Args(std::atomic_int* tid, const Func& f)
-        : threadId(tid), func(f)
-        {}
+        template<typename Func>
+        struct Args
+        {
+            Args(std::atomic_int *tid, const Func &f)
+                : threadId(tid), func(f)
+            {}
 
-        std::atomic_int* threadId;
-        Func func;
+            std::atomic_int *threadId;
+            Func func;
+        };
+
+        pthread_t m_threadData;
+        std::atomic_int m_threadId;
+        bool m_isStart;
     };
 
-    pthread_t m_threadData;
-    std::atomic_int m_threadId;
-    bool m_isStart;
-};
 
-
-// Implementation
-template<class Func>
-Thread::Thread(const Func& f)
-: m_threadId(0), m_isStart(false)
-{
-    
-    std::cout << "thread contructor" << std::endl;
-    Args<Func>* args = new Args<Func>(&m_threadId, f);
-
-    int error =  pthread_create(&m_threadData, NULL,
-            ThreadFunction<Func>, args);
-    if (error != 0)
+    // Implementation
+    template<class Func>
+    Thread::Thread(const Func &f)
+        : m_threadId(0), m_isStart(false)
     {
-        std::cout << "thread make fail " << std::endl;
-        ProcessCreateError(error);
+
+        std::cout << "thread contructor" << std::endl;
+        Args<Func> *args = new Args<Func>(&m_threadId, f);
+
+        int error =  pthread_create(&m_threadData, NULL,
+                                    ThreadFunction<Func>, args);
+        if (error != 0)
+        {
+            std::cout << "thread make fail " << std::endl;
+            ProcessCreateError(error);
+        }
+        m_isStart = true;
     }
-    m_isStart = true;
+
+    template<class Func>
+    void *Thread::ThreadFunction(void *arg)
+    {
+
+
+        boost::scoped_ptr<Args<Func> > args(reinterpret_cast<Args<Func>*>(arg));
+        *(args->threadId) = Tid();
+        std::cout << "ThreadFunction" << std::endl;
+        std::cout << *(args->threadId) << std::endl;
+
+        try
+        {
+            (args->func)(); // call the functor
+        }
+        catch (const std::exception &e)
+        {
+            ProcessException(e);
+        }
+        catch (...)
+        {
+            ProcessUnknownException();
+        }
+
+        return NULL;
+    }
+
 }
-
-template<class Func>
-void* Thread::ThreadFunction(void* arg)
-{
-   
-
-    boost::scoped_ptr<Args<Func> > args(reinterpret_cast<Args<Func>*>(arg));
-    *(args->threadId) = Tid();
-    std::cout << "ThreadFunction" << std::endl;
-    std::cout << *(args->threadId) << std::endl;
-
-    try
-    {
-        (args->func)(); // call the functor
-    }
-    catch (const std::exception& e)
-    {
-        ProcessException(e);
-    }
-    catch (...)
-    {
-        ProcessUnknownException();
-    }
-
-    return NULL;
-}
-
-}  
 
 #endif

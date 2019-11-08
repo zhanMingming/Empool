@@ -7,37 +7,40 @@
 #include <cassert>
 
 
-namespace zhanmm {
+namespace zhanmm
+{
 
 
-class Mutex : private boost::noncopyable {
+    class Mutex : private boost::noncopyable
+    {
 
-public:
-    Mutex();
-    ~Mutex();
+    public:
+        Mutex();
+        ~Mutex();
 
-    // These two functions can only called by MutexLocker
-    void Lock();
-    void Unlock();
-    bool TryLock();
-    void Init();
-    pthread_mutex_t* getMutexPtr();
+        // These two functions can only called by MutexLocker
+        void Lock();
+        void Unlock();
+        bool TryLock();
+        void Init();
+        pthread_mutex_t *getMutexPtr();
 
-private:
-    pthread_mutex_t m_mutex;
-    volatile bool m_isInit;
-};
+    private:
+        pthread_mutex_t m_mutex;
+        volatile bool m_isInit;
+    };
 
 
 
-class MutexLocker : private boost::noncopyable {
-public:
-    explicit MutexLocker(Mutex& m);
-    ~MutexLocker();
+    class MutexLocker : private boost::noncopyable
+    {
+    public:
+        explicit MutexLocker(Mutex &m);
+        ~MutexLocker();
 
-private:
-    Mutex& m_mutex;
-};
+    private:
+        Mutex &m_mutex;
+    };
 
 
 }  // namespace zhanmm
