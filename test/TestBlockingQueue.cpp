@@ -1,4 +1,4 @@
-#include "BlockQueue.h"
+#include "BlockingQueue.h"
 #include "Thread.h"
 #include <gtest/gtest.h>
 #include <cstdlib>

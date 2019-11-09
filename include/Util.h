@@ -2,6 +2,7 @@
 #define  ZHANMM_UTIL_H
 
 #include <stdint.h>
+#include <stdlib.h>
 #include <sys/select.h>
 #include <sys/time.h>
 #include <unistd.h>
@@ -17,6 +18,12 @@ namespace zhanmm
     void MilliSleep(TimeValue time_in_ms);
 
     void MicroSleep(TimeValue time_in_ms);
+
+
+    long long timeInMilliseconds(void);
+
+
+    long timeInSeconds(void);
 
 } //namespace zhanmm
 

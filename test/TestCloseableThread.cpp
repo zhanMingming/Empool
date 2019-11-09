@@ -17,7 +17,7 @@ namespace
     void NoOpWork(CloseFunction)
     {}
 
-    void NoOp()
+    void NoOp(int threadId)
     {}
 
     class IncNumWork
@@ -115,7 +115,7 @@ namespace
             : counter(i)
         {}
 
-        void operator()()
+        void operator()(int threadId)
         {
             ++counter;
         }

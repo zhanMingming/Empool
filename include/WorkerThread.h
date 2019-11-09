@@ -2,6 +2,7 @@
 #ifndef ZHANMM_WORKER_THREAD_H_
 #define ZHANMM_WORKER_THREAD_H_
 
+
 #include "TaskQueueBase.h"
 #include "ConditionVariable.h"
 #include "CloseableThread.h"
@@ -13,10 +14,11 @@
 #include <memory>
 #include <exception>
 
+
 namespace zhanmm
 {
 
-    const int MAX_WAIT_IN_MS = 1000 * 30;
+    const int MAX_WAIT_IN_MS = 1000 * 10;
 
     //class ScalingThreadPool;
 
@@ -29,7 +31,7 @@ namespace zhanmm
             RUNNING,
             FINISHED,
         };
-        
+
     public:
         //typedef boost::shared_ptr<WorkerThread> Ptr;
         typedef CloseableThread::FinishAction FinishAction;
