@@ -37,8 +37,8 @@ namespace zhanmm
 
     protected:
         void CheckCancellation() const;
-        virtual void OnCancel();
-        virtual void OnCallCancel();
+        // virtual void OnCancel();
+        // virtual void OnCallCancel();
 
     private:
         virtual void DoRun() = 0;

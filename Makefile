@@ -34,9 +34,11 @@ $(TARGET): $(OBJS)
 	$(AR) rcs $@ $^
 else
 $(TARGET): $(OBJS)
-	#$(LINK.cpp) $(LIBTYPE) -Wl,-soname,$@ -o $@.1.0 $^ $(LDFLAGS)
+ifeq ($(shell uname),Darwin)
 	$(LINK.cpp) $(LIBTYPE) -Wl  -o $@.1.0 $^ $(LDFLAGS)
-
+else
+	$(LINK.cpp) $(LIBTYPE) -Wl,-soname,$@ -o $@.1.0 $^ $(LDFLAGS)
+endif
 	ln -fs $@.1.0 $@
 endif
 

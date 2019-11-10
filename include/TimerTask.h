@@ -46,6 +46,13 @@ namespace zhanmm
         mutable Mutex m_time_guard;
     };
 
+    class EndTimerTask : public TimerTask
+    {
+        public:
+            virtual void DoRun() {}
+    };
+    
+
     template<typename Func>
     class TimerFunctorTask : public TimerTask
     {

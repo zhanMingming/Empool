@@ -31,7 +31,6 @@ namespace zhanmm
     };
 
 
-
     class MutexLocker : private boost::noncopyable
     {
     public:

@@ -103,9 +103,9 @@ public:
     }
 
 private:
-    QueueImpl m_queue;
     mutable Mutex m_mutex;
     mutable ConditionVariable m_mutexCond;
+    QueueImpl m_queue;
 };
 
 

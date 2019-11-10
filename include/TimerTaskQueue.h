@@ -21,6 +21,7 @@ namespace zhanmm
     {
     public:
         TimerTaskQueue(Mutex &m);
+        ~TimerTaskQueue();
         boost::shared_ptr<TimerTask> GetMin() const;
         boost::shared_ptr<TimerTask> PopMin();
         void PopMinAndPush();

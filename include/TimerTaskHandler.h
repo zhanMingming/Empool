@@ -14,6 +14,7 @@
 #include <boost/noncopyable.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/scoped_ptr.hpp>
+#include <atomic>
 
 
 namespace zhanmm
@@ -22,7 +23,7 @@ namespace zhanmm
 
     TimeValue GetCurrentTime();
 
-    const int MAX_WAIT_TIME_MS_WEHN_QUEUE_IS_EMPTY = 100;
+    //const int MAX_WAIT_TIME_MS_WEHN_QUEUE_IS_EMPTY = 100;
 
     class TimerTaskHandler : public boost::noncopyable
     {
@@ -46,7 +47,9 @@ namespace zhanmm
                 bool is_run_now);
 
         //void StopAsync();
-        void Stop();
+        void ShutDown();
+        void ShutDownNow();
+        void IsShutDown();
 
     private:
         bool DoAddCronTimerTask(boost::shared_ptr<TimerTask> task, TimeValue delay_in_ms);
@@ -56,7 +59,10 @@ namespace zhanmm
         typedef CloseableThread::Function Function;
         void ThreadFunction(const Function &checkFunc);
         void ProcessError(const std::exception &e);
+        bool CheckIsRequestShutDown() const;
+        void ShutDownHelper(bool now = false);
 
+        std::atomic_bool m_isRequestShutDown;
         mutable Mutex m_queue_guard;
         TimerTaskQueue m_task_queue;
         boost::scoped_ptr<CloseableThread> m_thread;

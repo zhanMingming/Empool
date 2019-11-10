@@ -3,10 +3,10 @@
 
 #include "CloseableThread.h"
 //#include "TaskQueue.h"
-#include "FunctorTask.h"
 // #include "EndTask.h"
 #include "ConditionVariable.h"
 #include "Util.h"
+#include "TaskBase.h"
 
 #include <atomic>
 #include <vector>
@@ -46,6 +46,12 @@ namespace zhanmm
 
     private:
         long  m_priority;
+    };
+
+    class EndPriorityTask : public PriorityTask
+    {
+        public :
+        virtual void DoRun() {}
     };
 
 
@@ -151,6 +157,8 @@ namespace zhanmm
 
         bool Empty();
 
+        boost::shared_ptr<TaskBase> PushTask(boost::shared_ptr<PriorityTask> task);
+
         boost::shared_ptr<TaskBase> GetTask();
 
         bool CheckIsRequestShutDown() const;
@@ -162,6 +170,10 @@ namespace zhanmm
         void SetState(const State state);
 
         void DoSetState(const State state);
+
+        static bool CompareFuncGreater(boost::shared_ptr<PriorityTask> left, boost::shared_ptr<PriorityTask> right);
+
+        static bool CompareFuncLesser(boost::shared_ptr<PriorityTask> left, boost::shared_ptr<PriorityTask> right);
 
 
         State m_state;
@@ -181,14 +193,13 @@ namespace zhanmm
         ConditionVariable m_mutexCond;
 
 
-        typedef bool (*CompareFuncGreater)(boost::shared_ptr<PriorityTask>, boost::shared_ptr<PriorityTask>);
-        typedef bool (*CompareFuncLesser)(boost::shared_ptr<PriorityTask>, boost::shared_ptr<PriorityTask>);
+        typedef bool (*CompareFunc)(boost::shared_ptr<PriorityTask>, boost::shared_ptr<PriorityTask>);
 
         typedef std::priority_queue<boost::shared_ptr<PriorityTask>,
-                std::vector<boost::shared_ptr<PriorityTask> >, CompareFuncGreater> PriorityQueueGreater;
+                std::vector<boost::shared_ptr<PriorityTask> >, CompareFunc> PriorityQueueGreater;
 
         typedef std::priority_queue<boost::shared_ptr<PriorityTask>,
-                std::vector<boost::shared_ptr<PriorityTask> >, CompareFuncLesser> PriorityQueueLesser;
+                std::vector<boost::shared_ptr<PriorityTask> >, CompareFunc> PriorityQueueLesser;
 
 
         // FIFO, PRIORITY taskQueue

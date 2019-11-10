@@ -33,7 +33,8 @@ namespace zhanmm
         {
             INIT,
             RUNNING,
-            FINISHED,
+            STOP,
+            SHUTDOWN
         };
 
     public:
@@ -56,7 +57,7 @@ namespace zhanmm
 
         template<typename Func>
         boost::shared_ptr<TimerTask> AddCycleTimerTask(Func f,
-                TimeValue period_in_ms, bool is_run_now);
+                TimeValue period_in_ms, bool is_run_now = true);
 
         //异步关闭，如果有task 正在执行，则等待task 完成后，进行关闭
         void ShutDown();
@@ -76,10 +77,11 @@ namespace zhanmm
 
 
         //void NotifyWhenThreadsStop();
-        bool IsFinished() const;
-        bool DoIsFinished() const;
+        //bool IsFinished() const;
+        bool DoIsShutDown() const;
         void SetState(const State state);
         void DoSetState(const State state);
+        void ShutDownHelper(bool now = false);
 
 
         State m_state;

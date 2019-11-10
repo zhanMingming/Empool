@@ -56,7 +56,7 @@ TEST_F(TimerTaskHandlerTestSuite, test_AddCronTimerTask)
         timerTaskHandler.AddCronTimerTask(boost::shared_ptr<TimerTask>(new TestTimerTaskHandlerTask(counter)), 200);
         ASSERT_EQ(0, counter);
         MilliSleep(300);
-        //timerTaskHandler.Stop();
+        //timerTaskHandler.ShutDown( );
         ASSERT_EQ(1, counter);
     }
     ASSERT_EQ(1, counter);
@@ -364,7 +364,7 @@ TEST_F(TimerTaskHandlerTestSuite, test_StopAsync)
         MilliSleep(200);
         ASSERT_EQ(1, counter);
 
-        timerTaskHandler.Stop();
+        timerTaskHandler.ShutDown( );
     }
     ASSERT_EQ(1, counter);
 }
@@ -380,7 +380,7 @@ TEST_F(TimerTaskHandlerTestSuite, test_AddCronTimerTask_after_StopAsync)
         MilliSleep(300);
         ASSERT_EQ(1, counter);
 
-        timerTaskHandler.Stop();
+        timerTaskHandler.ShutDown( );
         boost::shared_ptr<TimerTask> task1(new TestTimerTaskHandlerTask(counter));
         ASSERT_FALSE(timerTaskHandler.AddCronTimerTask(task1, 100));
         ASSERT_EQ(1, counter);
@@ -403,7 +403,7 @@ TEST_F(TimerTaskHandlerTestSuite, test_Stop)
         MilliSleep(200);
         ASSERT_EQ(1, counter);
 
-        timerTaskHandler.Stop();
+        timerTaskHandler.ShutDown( );
 
         MilliSleep(500);
         ASSERT_EQ(1, counter);
@@ -423,7 +423,7 @@ namespace
 
         void operator()()
         {
-            m_TimerTaskHandler.Stop();
+            m_TimerTaskHandler.ShutDown( );
         }
     };
 }
@@ -442,7 +442,7 @@ TEST_F(TimerTaskHandlerTestSuite, test_Stop_with_multiple_threads)
 
         Thread thread1((TimerTaskHandlerStopThread(timerTaskHandler)));
         Thread thread2((TimerTaskHandlerStopThread(timerTaskHandler)));
-        timerTaskHandler.Stop();
+        timerTaskHandler.ShutDown( );
 
         MilliSleep(500);
         ASSERT_EQ(1, counter);
@@ -461,7 +461,7 @@ TEST_F(TimerTaskHandlerTestSuite, test_AddCronTimerTask_after_Stop)
         MilliSleep(300);
         ASSERT_EQ(1, counter);
 
-        timerTaskHandler.Stop();
+        timerTaskHandler.ShutDown( );
         boost::shared_ptr<TimerTask> task1(new TestTimerTaskHandlerTask(counter));
         ASSERT_FALSE(timerTaskHandler.AddCronTimerTask(task1, 100));
         ASSERT_EQ(1, counter);
@@ -473,10 +473,10 @@ TEST_F(TimerTaskHandlerTestSuite, test_AddCronTimerTask_after_Stop)
 }
 
 
-GTEST_API_ int main(int argc, char **argv)
-{
-    testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
-}
+// GTEST_API_ int main(int argc, char **argv)
+// {
+//     testing::InitGoogleTest(&argc, argv);
+//     return RUN_ALL_TESTS();
+// }
 
 

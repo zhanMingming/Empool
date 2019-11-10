@@ -1,11 +1,4 @@
-/*
-* @Author: zhanmingming
-* @Date:   2019-10-26 21:28:23
-* @Last Modified by:   zhanmingming
-* @Last Modified time: 2019-10-26 21:33:30
-*/
-
-#include "ScheduledThreadPool.h"
+#include "ThreadPoolManager.h"
 #include <iostream>
 
 using namespace zhanmm;
@@ -17,6 +10,32 @@ void func() {
 
 
 int main(void) {
-    ScheduledThreadPool  t(4);
-    t.AddCronTimerTask(func, 100);
+
+
+    boost::shared_ptr<ScheduledThreadPool> schedule1(ThreadPoolManager::newScheduledThreadPool(2));
+
+    schedule1->AddCronTimerTask(func, 100);
+
+    sleep(1);
+
+    schedule1->ShutDownNow();
+
+
+    {
+        boost::shared_ptr<ScheduledThreadPool> schedule2(ThreadPoolManager::newScheduledThreadPool(4));
+
+        schedule2->AddCycleTimerTask(func, 10);
+        sleep(1);
+
+        schedule2->ShutDown();
+
+    }
+
+    boost::shared_ptr<ScheduledThreadPool> schedule3(ThreadPoolManager::newScheduledThreadPool(8));
+
+    schedule3->AddCycleTimerTask(func, 10);
+    sleep(1);
+
+    schedule3->ShutDown();
+
 }

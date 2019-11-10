@@ -16,11 +16,13 @@ namespace zhanmm
           m_stateGuard(),
           m_stateCond(m_stateGuard),
           m_mutex(),
-          m_mutexCond(m_mutex)
+          m_mutexCond(m_mutex),
+          m_taskQueueGreater(SingleThreadPool::CompareFuncGreater),
+          m_taskQueueLesser(SingleThreadPool::CompareFuncLesser)
     {
 
         m_thread.reset(new CloseableThread(
-                           boost::bind(&SingleThreadPool::ThreadFunction, this, _1), boost::bind(&SingleThreadPool::NotifyWhenThreadStop, this)));
+                           boost::bind(&SingleThreadPool::ThreadFunction, this, _1), boost::protect(boost::bind(&SingleThreadPool::NotifyWhenThreadStop, this, _1))));
 
 
         SetState(RUNNING);
@@ -47,7 +49,7 @@ namespace zhanmm
 
     bool SingleThreadPool::CompareFuncLesser(boost::shared_ptr<PriorityTask> left, boost::shared_ptr<PriorityTask> right)
     {
-        return left->GetPriorityValue() < right->GetPriorityValue();
+        return !CompareFuncGreater(left, right);
     }
 
 
@@ -58,10 +60,17 @@ namespace zhanmm
         {
             return boost::shared_ptr<TaskBase>();
         }
+        return PushTask(task);
+    }
+
+    boost::shared_ptr<TaskBase> SingleThreadPool::PushTask(boost::shared_ptr<PriorityTask> task)
+    {
+
         ConditionNotifyLocker lock(m_mutexCond, boost::bind(&SingleThreadPool::Empty, this));
 
         m_runMode == LIFO ? m_taskQueueLesser.push(task) : m_taskQueueGreater.push(task);
         return task;
+
     }
 
 
@@ -89,12 +98,15 @@ namespace zhanmm
 
             boost::shared_ptr<TaskBase> runTask = GetTask();
 
-            if (runTask)
+            if (dynamic_cast<EndPriorityTask*>(runTask.get()) != NULL)
             {
+                break; // stop thread
+            } else {
                 runTask->Run();
             }
         }
     }
+
 
     bool SingleThreadPool::IsShutDown() const
     {
@@ -139,6 +151,9 @@ namespace zhanmm
             SetState(STOP);
 
             m_thread->AsyncClose();
+
+            boost::shared_ptr<PriorityTask> endTask(new EndPriorityTask());
+            PushTask(endTask);
 
         }
     }

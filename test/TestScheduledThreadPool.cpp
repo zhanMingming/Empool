@@ -488,9 +488,9 @@ TEST(ScheduledThreadPool, test_StopNow_when_TaskQueue_empty)
 //   ASSERT_EQ(0, counter);
 // }
 */
-GTEST_API_ int main(int argc, char **argv)
-{
-    testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
-}
+// GTEST_API_ int main(int argc, char **argv)
+// {
+//     testing::InitGoogleTest(&argc, argv);
+//     return RUN_ALL_TESTS();
+// }
 

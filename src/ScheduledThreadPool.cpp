@@ -27,7 +27,7 @@ namespace zhanmm
 
     ScheduledThreadPool::~ScheduledThreadPool()
     {
-        // keep other thread from pushing more tasks
+        
         ShutDown();
     }
 
@@ -37,40 +37,13 @@ namespace zhanmm
         return m_handlers.size();
     }
 
-
-    void ScheduledThreadPool::ShutDownNow()
+    void ScheduledThreadPool::ShutDownHelper(bool now)
     {
-        ShutDown();
-    }
-
-
-    void ScheduledThreadPool::ShutDown()
-    {
-        //     using boost::bind;
-        //     using std::mem_fun;
-        //     using std::not1;
-
-        //     StopAsync();
-
-        //     // wait until all worker threads stop
-        //     // ConditionWaitLocker l(m_stateGuard,
-        //     //             bind(not1(mem_fun(&ScheduledThreadPool::
-        //     //                       DoIsFinished)),
-        //     //                  this));
-
-        //     // bool isTimerStarted = false;
-        //     // {
-        //     //   MutexLocker lock(m_timerGuard);
-        //     //   isTimerStarted = static_cast<bool>(m_timer);
-        //     // }
-
-        //     if (isTimerStarted)
-        //     {
-        //       m_timer->Stop(); // wait timer thread to stop
-        //     }
         bool flag = false;
         if (m_isRequestShutDown.compare_exchange_weak(flag, true, std::memory_order_release, std::memory_order_relaxed))
         {
+
+            SetState(STOP);
             BOOST_FOREACH(boost::shared_ptr<TimerTaskHandler> &t, m_handlers)
             {
                 bool isStarted = false;
@@ -81,11 +54,23 @@ namespace zhanmm
                 if (isStarted)
                 {
                     std::cout << "start stop" << std::endl;
-                    t->Stop();
+                    now == true ? t->ShutDownNow() : t->ShutDown();
                 }
             }
-            SetState(FINISHED);
+            SetState(SHUTDOWN);
         }
+
+    }
+
+    void ScheduledThreadPool::ShutDownNow()
+    {
+        ShutDownHelper(true);
+    }
+
+
+    void ScheduledThreadPool::ShutDown()
+    {
+        ShutDownHelper();
     }
 
 
@@ -123,19 +108,14 @@ namespace zhanmm
 
     bool ScheduledThreadPool::IsShutDown() const
     {
-        return IsFinished();
-    }
-
-    bool ScheduledThreadPool::IsFinished() const
-    {
         MutexLocker l(m_stateGuard);
-        return DoIsFinished();
+        return DoIsShutDown();
     }
 
 
-    bool ScheduledThreadPool::DoIsFinished() const
+    bool ScheduledThreadPool::DoIsShutDown() const
     {
-        return m_state == FINISHED;
+        return m_state == SHUTDOWN;
     }
 
 

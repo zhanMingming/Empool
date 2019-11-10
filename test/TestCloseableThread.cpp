@@ -152,9 +152,9 @@ TEST(CloseableThread, test_FinishAcion_execute_before_Finished)
 }
 
 
-GTEST_API_ int main(int argc, char **argv)
-{
-    testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
-}
+// GTEST_API_ int main(int argc, char **argv)
+// {
+//     testing::InitGoogleTest(&argc, argv);
+//     return RUN_ALL_TESTS();
+// }
 

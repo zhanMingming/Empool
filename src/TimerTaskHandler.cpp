@@ -22,7 +22,8 @@ namespace zhanmm
 
     /// TimerTaskHandler
     TimerTaskHandler::TimerTaskHandler()
-        : m_task_queue(m_queue_guard)
+        : m_isRequestShutDown(false),
+          m_task_queue(m_queue_guard)
     {
 
         // ensure that the thread is created successfully.
@@ -45,7 +46,7 @@ namespace zhanmm
 
     TimerTaskHandler::~TimerTaskHandler()
     {
-        Stop();
+        ShutDown();
     }
 
     void TimerTaskHandler::ThreadFunction(const Function &checkFunc)
@@ -61,7 +62,9 @@ namespace zhanmm
                 {
                     checkFunc();
                     std::cout << "thread wait" << std::endl;
-                    m_task_queue.TimedWait(MAX_WAIT_TIME_MS_WEHN_QUEUE_IS_EMPTY);
+                    //m_task_queue.TimedWait(MAX_WAIT_TIME_MS_WEHN_QUEUE_IS_EMPTY);
+                    m_task_queue.Wait();
+
                 }
 
                 checkFunc();
@@ -101,7 +104,12 @@ namespace zhanmm
 
             if (is_fired)
             {
-                task->Run();
+                if (dynamic_cast<EndTimerTask*>(task.get()) != NULL) {
+                    break;
+                } else {
+                    task->Run();
+                }
+                
             }
         }
     }
@@ -187,19 +195,54 @@ namespace zhanmm
     //     sync::MutexLocker lock(m_queue_guard);
     //     m_TimerTaskHandler_queue.Clear();
     // }
-
-    void TimerTaskHandler::Stop()
+    // 
+    
+    bool TimerTaskHandler::CheckIsRequestShutDown() const
     {
-        m_thread->AsyncClose();
-        std::cout << "asyncClose" << std::endl;
-        m_task_queue.Notify();
-        std::cout << "Notify" << std::endl;
-        m_thread->Close();
-        std::cout << "close" << std::endl;
-        MutexLocker lock(m_queue_guard);
-        std::cout << "lock" << std::endl;
-        m_task_queue.Clear();
-        std::cout << "clear" << std::endl;
+        return m_isRequestShutDown.load();
+    }
+
+    void TimerTaskHandler::ShutDownHelper(bool  now)
+    {
+        bool flag = false;
+        if (m_isRequestShutDown.compare_exchange_weak(flag, true, std::memory_order_release, std::memory_order_relaxed)) {
+
+            {
+                MutexLocker lock(m_queue_guard);
+                boost::shared_ptr<TimerTask> endTask(new EndTimerTask());
+                endTask->SetDeadline(GetCurrentTime());
+                m_task_queue.PushTask(boost::shared_ptr<TimerTask>(new EndTimerTask()));
+
+            }
+
+            now == true ? m_thread->Close() : m_thread->AsyncClose();
+        }
+
+
+    }
+
+    void TimerTaskHandler::ShutDownNow()
+    {
+        ShutDownHelper(true);
+
+    }
+
+
+    void TimerTaskHandler::ShutDown()
+    {
+
+        ShutDownHelper();
+
+        // m_thread->AsyncClose();
+        // std::cout << "asyncClose" << std::endl;
+        // m_task_queue.Notify();
+        // std::cout << "Notify" << std::endl;
+        // m_thread->Close();
+        // std::cout << "close" << std::endl;
+        // MutexLocker lock(m_queue_guard);
+        // std::cout << "lock" << std::endl;
+        // m_task_queue.Clear();
+        // std::cout << "clear" << std::endl;
     }
 
 

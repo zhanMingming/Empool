@@ -50,7 +50,7 @@ namespace zhanmm
         catch (const TaskCancelException &)
         {
             SetState(CANCELLED);
-            OnCancel();
+            //OnCancel();
         }
 
         // wake up the waiting threads that is cancelling this task.
@@ -113,15 +113,15 @@ namespace zhanmm
         }
     }
 
-    inline void TaskBase::OnCancel()
-    {
-        // The default cancal action is doing nothing.
-    }
+    // inline void TaskBase::OnCancel()
+    // {
+    //     // The default cancal action is doing nothing.
+    // }
 
-    inline void TaskBase::OnCallCancel()
-    {
-        // The default cancal action is doing nothing.
-    }
+    // inline void TaskBase::OnCallCancel()
+    // {
+    //     // The default cancal action is doing nothing.
+    // }
 
     void TaskBase::SetState(const State state)
     {

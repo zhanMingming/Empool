@@ -42,7 +42,6 @@ namespace zhanmm
             return new SingleThreadPool(mode);
         }
 
-
     };
 
 

@@ -54,6 +54,11 @@ namespace zhanmm
         : m_cond(m), m_queue(TimerTaskQueue::CompareTimerTask)
     {}
 
+    TimerTaskQueue::~TimerTaskQueue()
+    {
+        Clear();
+    }
+
     unsigned TimerTaskQueue::GetSize() const
     {
         return static_cast<unsigned>(m_queue.size());
