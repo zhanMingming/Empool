@@ -7,7 +7,7 @@ CXXFLAGS += -Wall -Werror
 
 LDFLAGS += -pthread
 LDFLAGS += -lgtest_main -lgtest
-LDFLAGS += -L .. -ltpool
+LDFLAGS += -L .. -lzmpool
 
 SRCDIR := .
 OBJDIR := .

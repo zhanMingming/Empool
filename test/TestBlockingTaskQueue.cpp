@@ -6,6 +6,7 @@
 #include <cstdlib>
 #include <boost/shared_ptr.hpp>
 #include <vector>
+#include <iostream>
 
 using namespace std;
 using namespace zhanmm;
@@ -44,16 +45,17 @@ namespace
     };
 }
 
-TEST(BlockingTaskQueueTestSuite, test_Push)
-{
-    BlockingTaskQueue taskQueue;
-    {
-        Thread t1((PushThreadFunc(taskQueue, 20)));
-        Thread t2((PushThreadFunc(taskQueue, 50)));
-    }
+// TEST(BlockingTaskQueueTestSuite, test_Push)
+// {
+//     BlockingTaskQueue taskQueue;
+//     {
+//         Thread t1((PushThreadFunc(taskQueue, 20)));
+//         //std::cout << "sd" << std::endl;
+//         Thread t2((PushThreadFunc(taskQueue, 50)));
+//     }
 
-    ASSERT_EQ(static_cast<size_t>(70), taskQueue.Size());
-}
+//     ASSERT_EQ(static_cast<size_t>(70), taskQueue.Size());
+// }
 
 namespace
 {
@@ -73,17 +75,17 @@ namespace
     };
 }
 
-TEST(BlockingTaskQueueTestSuite, test_PopWait)
-{
-    BlockingTaskQueue taskQueue;
-    {
-        Thread popThread((PopThreadFunc(taskQueue)));
-        sleep(1);
-        Thread pushThread((PushThreadFunc(taskQueue, 10)));
-    }
+// TEST(BlockingTaskQueueTestSuite, test_PopWait)
+// {
+//     BlockingTaskQueue taskQueue;
+//     {
+//         Thread popThread((PopThreadFunc(taskQueue)));
+//         sleep(1);
+//         Thread pushThread((PushThreadFunc(taskQueue, 10)));
+//     }
 
-    ASSERT_EQ(static_cast<size_t>(9), taskQueue.Size());
-}
+//     ASSERT_EQ(static_cast<size_t>(9), taskQueue.Size());
+// }
 
 namespace
 {
@@ -148,24 +150,24 @@ namespace
     };
 }
 
-TEST(BlockingTaskQueueTestSuite, test_NormalUsage)
-{
-    BlockingTaskQueue taskQueue;
-    ThreadSafeInt counter;
-    {
-        typedef boost::shared_ptr<Thread> ThreadPtr;
-        vector<ThreadPtr> workers;
+// TEST(BlockingTaskQueueTestSuite, test_NormalUsage)
+// {
+//     BlockingTaskQueue taskQueue;
+//     ThreadSafeInt counter;
+//     {
+//         typedef boost::shared_ptr<Thread> ThreadPtr;
+//         vector<ThreadPtr> workers;
 
-        for (int i = 0; i < 10; ++i)
-        {
-            workers.push_back(ThreadPtr(
-                                  new Thread((RunTaskThreadFunc(taskQueue)))));
-        }
-        Thread t2((PushIncTaskThreadFunc(taskQueue, 10, counter)));
-    }
+//         for (int i = 0; i < 10; ++i)
+//         {
+//             workers.push_back(ThreadPtr(
+//                                   new Thread((RunTaskThreadFunc(taskQueue)))));
+//         }
+//         Thread t2((PushIncTaskThreadFunc(taskQueue, 10, counter)));
+//     }
 
-    ASSERT_EQ(10, counter.i);
-}
+//     ASSERT_EQ(10, counter.i);
+// }
 
 
 // GTEST_API_ int main(int argc, char **argv)

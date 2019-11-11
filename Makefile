@@ -12,7 +12,7 @@ CXXFLAGS += -I ./include
 
 LDFLAGS += -pthread
 
-TARGET := libtpool$(LIB_SUFFIX)
+TARGET := libzmpool$(LIB_SUFFIX)
 
 TEST_DIR := test
 EXAMPLE_DIR := examples
