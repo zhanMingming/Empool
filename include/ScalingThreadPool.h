@@ -90,12 +90,13 @@ namespace zhanmm
         void HandleWorkerThread(const Function &checkFunc);
         bool OJudgeFunc();
         bool JudgeFunc();
-       
+        void NotifyMonitorThread();
+
 
         // member
-         
+
         State m_state;
-        
+
         const size_t  m_corePoolSize;
 
         const size_t  m_maxThreadSize;
@@ -106,7 +107,7 @@ namespace zhanmm
 
 
         // sync tool
-        
+
         Mutex m_stoppedThreadNumGuard;
 
         mutable Mutex m_mutex;

@@ -60,7 +60,7 @@ namespace zhanmm
         std::cout << "~ScalingThreadPool" << std::endl;
         // keep other thread from pushing more tasks
         ShutDownNow();
-        m_monitorThread->AsyncClose();
+
     }
 
     size_t  ScalingThreadPool::GetCorePoolSize() const
@@ -137,19 +137,31 @@ namespace zhanmm
             // {
             //   t->AsyncClose();
             // }
-            MutexLocker lock(m_addOrSubThreadNumGuard);
-            for (std::unordered_map<int, boost::shared_ptr<WorkerThread> >::iterator iter = m_threads.begin(); iter != m_threads.end(); ++iter)
             {
-                iter->second->AsyncClose();
-                std::cout << "AsyncClose" << std::endl;
+                MutexLocker lock(m_addOrSubThreadNumGuard);
+                for (std::unordered_map<int, boost::shared_ptr<WorkerThread> >::iterator iter = m_threads.begin(); iter != m_threads.end(); ++iter)
+                {
+                    iter->second->AsyncClose();
+                    std::cout << "AsyncClose" << std::endl;
+                }
+                const size_t threadNum = m_threads.size();
+                for (size_t i = 0; i < threadNum; ++i)
+                {
+                    m_taskQueue->Push(boost::shared_ptr<TaskBase>(new EndTask()));
+                    std::cout << "put task done" << std::endl;
+                }
             }
-            const size_t threadNum = m_threads.size();
-            for (size_t i = 0; i < threadNum; ++i)
-            {
-                m_taskQueue->Push(boost::shared_ptr<TaskBase>(new EndTask()));
-                std::cout << "put task done" << std::endl;
-            }
+
+            NotifyMonitorThread();
         }
+    }
+
+    void ScalingThreadPool::NotifyMonitorThread()
+    {
+        m_monitorThread->AsyncClose();
+        AddWorkerThreadIdToSubVector(0);
+        ConditionNotifyLocker cond(m_addOrSubThreadCond, boost::bind(&ScalingThreadPool::JudgeFunc, this));
+
     }
 
     //
@@ -238,10 +250,13 @@ namespace zhanmm
             //MutexLocker lock(m_addOrSubThreadNumGuard);
             ConditionWaitLocker cond(m_addOrSubThreadCond);
             //m_addOrSubThreadCond.wait();
-            if (!cond.TimeWait(boost::bind(&ScalingThreadPool::OJudgeFunc, this), 30 * 1000))
+            if (!cond.TimeWait(boost::bind(&ScalingThreadPool::OJudgeFunc, this), 10 * 1000))
             {
                 std::cout << "handleWorkerThread wait too long so exit" << std::endl;
             }
+
+            checkFunc();
+
             std::cout << "m_monitorThread be wake up" << std::endl;
             if (m_taskQueue->Size() > TASK_QUEUE_SIZE_THRESHOLD && m_threads.size() < m_maxThreadSize)
             {
