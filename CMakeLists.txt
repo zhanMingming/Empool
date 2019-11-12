@@ -3,8 +3,8 @@ set(CMAKE_CXX_STANDARD 11)
 
 project(empool)
 
-find_package(GTEST REQUIRED)
-find_package(BOOST REQUIRED)
+#find_package(GTEST REQUIRED)
+#find_package(BOOST REQUIRED)
 #find_package(THREAD REQUIRED)
 
 #However, the file(GLOB...) allows for wildcard additions:
@@ -12,10 +12,10 @@ file(GLOB SOURCES "src/*.cpp")
 
 if(CMAKE_COMPILER_IS_GNUCXX)
     if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-        set(CMAKE_CXX_FLAGS " -Wall -Werror -pthread -std=c++11 ${CMAKE_CXX_FLAGS}")
+        set(CMAKE_CXX_FLAGS " -Wall -pthread -std=c++11 ${CMAKE_CXX_FLAGS}")
         message(STATUS "optional:-std=c++11")   
     else()
-        set(CMAKE_CXX_FLAGS "-Wall -Werror -pthread -std=c++11 ${CMAKE_CXX_FLAGS}")
+        set(CMAKE_CXX_FLAGS "-Wall  -pthread -std=c++11 ${CMAKE_CXX_FLAGS}")
         message(STATUS "optional:-std=c++11")
     endif()
 endif(CMAKE_COMPILER_IS_GNUCXX)
@@ -24,7 +24,7 @@ endif(CMAKE_COMPILER_IS_GNUCXX)
 INCLUDE_DIRECTORIES(include/empool)
 find_path(BOOST_INCLUDE_PATH NAMES  boost/bind.hpp)
 INCLUDE_DIRECTORIES(${BOOST_INCLUDE_PATH})
-
+find_package(BOOST REQUIRED)
 
 #INCLUDE_DIRECTORIES(/usr/local/include)
 

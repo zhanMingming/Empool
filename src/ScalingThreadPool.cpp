@@ -33,7 +33,7 @@ namespace empool
           m_threads(m_corePoolSize)
     {
         std::cout << m_corePoolSize << std::endl;
-        for (int index = 0; index < m_corePoolSize; ++index)
+        for (size_t index = 0; index < m_corePoolSize; ++index)
         {
 
             std::cout << "start thread" << std::endl;
