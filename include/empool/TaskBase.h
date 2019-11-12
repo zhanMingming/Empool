@@ -6,7 +6,7 @@
 #include <atomic>
 #include <boost/shared_ptr.hpp>
 
-namespace zhanmm
+namespace empool
 {
     class TaskBase
     {
@@ -54,6 +54,6 @@ namespace zhanmm
         ConditionVariable m_cancelCondition;
     };
 
-} //namespace zhanmm
+} //namespace empool
 
 #endif

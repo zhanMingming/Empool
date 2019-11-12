@@ -5,7 +5,7 @@
 #include <pthread.h>
 #include <boost/noncopyable.hpp>
 
-namespace zhanmm {
+namespace empool {
 
 
 class ConditionVariable : private boost::noncopyable {
@@ -139,6 +139,6 @@ private:
     ConditionVariable& m_conditionVariable;
 };
 
-}  //zhanmm
+}  //empool
 
 #endif

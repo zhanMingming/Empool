@@ -2,12 +2,12 @@ TARGET := tpool.test
 PROJECT_ROOT := ..
 DEPEND_LIB := $(wildcard $(PROJECT_ROOT)/libtpool.*)
 
-CXXFLAGS += -I ../include -std=c++11
+CXXFLAGS += -I ../include/empool -std=c++11
 CXXFLAGS += -Wall -Werror
 
 LDFLAGS += -pthread
 LDFLAGS += -lgtest_main -lgtest
-LDFLAGS += -L .. -lzmpool
+LDFLAGS += -L .. -lempool
 
 SRCDIR := .
 OBJDIR := .

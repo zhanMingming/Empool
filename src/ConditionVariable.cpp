@@ -5,7 +5,7 @@
 #include <errno.h>
 #include <iostream>
 
-using namespace zhanmm;
+using namespace empool;
 
 
 ConditionVariable::ConditionVariable(Mutex &m)

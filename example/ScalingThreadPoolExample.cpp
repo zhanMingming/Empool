@@ -9,7 +9,7 @@
 #include <gflags/gflags.h>
 #include <boost/shared_ptr.hpp>
 
-using namespace zhanmm;
+using namespace empool;
 using namespace std;
 
 Mutex m_mutex;

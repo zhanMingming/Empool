@@ -3,7 +3,7 @@
 
 #include "TaskBase.h"
 
-namespace zhanmm {
+namespace empool {
   class EndTask : public TaskBase {
   public:
     virtual void DoRun();

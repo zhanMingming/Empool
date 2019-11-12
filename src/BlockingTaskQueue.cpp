@@ -1,7 +1,7 @@
 #include "BlockingTaskQueue.h"
 
 
-namespace zhanmm {
+namespace empool {
 
 
 
@@ -24,4 +24,4 @@ size_t BlockingTaskQueue::Size() const
     return m_tasks.Size();
 }
 
-} //namespace zhanmm
+} //namespace empool

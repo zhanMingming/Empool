@@ -2,7 +2,7 @@
 #include "Mutex.h"
 
 using namespace std;
-using namespace zhanmm;
+using namespace empool;
 
 CyclicBarrier::CyclicBarrier(const int count)
     : m_max_count(count),

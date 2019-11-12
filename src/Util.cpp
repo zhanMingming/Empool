@@ -1,7 +1,7 @@
 #include "Util.h"
 
 
-namespace zhanmm
+namespace empool
 {
     void MilliSleep(TimeValue time_in_ms)
     {

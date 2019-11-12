@@ -8,7 +8,7 @@
 #include <boost/lockfree/queue.hpp>
 #include <memory>
 
-namespace zhanmm {
+namespace empool {
 
 class BlockingTaskQueue : public TaskQueueBase {
 public:
@@ -26,6 +26,6 @@ private:
 };
 
 
-}  // namespace zhanmm
+}  // namespace empool
 
 #endif

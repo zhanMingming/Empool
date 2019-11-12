@@ -5,7 +5,7 @@
 #include <boost/shared_ptr.hpp>
 #include <cstdlib> // for size_t
 
-namespace zhanmm {
+namespace empool {
   class TaskQueueBase {
   public:
 

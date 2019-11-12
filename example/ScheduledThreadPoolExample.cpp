@@ -1,7 +1,7 @@
 #include "ThreadPoolManager.h"
 #include <iostream>
 
-using namespace zhanmm;
+using namespace empool;
 using namespace std;
 
 void func() {

@@ -8,7 +8,7 @@
 #include <unistd.h>
 
 
-namespace zhanmm
+namespace empool
 {
 
     typedef  uint64_t  TimeValue;
@@ -25,6 +25,6 @@ namespace zhanmm
 
     long timeInSeconds(void);
 
-} //namespace zhanmm
+} //namespace empool
 
 #endif

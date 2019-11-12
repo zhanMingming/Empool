@@ -7,7 +7,7 @@
 #include "FixedThreadPool.h"
 
 
-namespace zhanmm {
+namespace empool {
 
 
 FixedThreadPool::FixedThreadPool(const size_t threadNum)
@@ -50,4 +50,4 @@ bool FixedThreadPool::IsShutDown() const
 
 
 
-} //namespace zhanmm
+} //namespace empool

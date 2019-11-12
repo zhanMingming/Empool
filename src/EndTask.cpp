@@ -1,10 +1,10 @@
 #include "EndTask.h"
 
-namespace zhanmm {
+namespace empool {
 
 void EndTask::DoRun()
 {
   // do nothing
 }
 
-} //namespace zhanmm
+} //namespace empool

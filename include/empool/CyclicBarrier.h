@@ -8,7 +8,7 @@
 #include <cassert>
 #include <atomic>
 
-namespace zhanmm
+namespace empool
 {
 
     enum  State
@@ -43,7 +43,7 @@ namespace zhanmm
     
     };
 
-}  //zhanmm
+}  //empool
 
 
 #endif /* ZHANMM_CYCLICBARRIER_H_ */

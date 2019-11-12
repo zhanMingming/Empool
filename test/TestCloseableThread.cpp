@@ -28,7 +28,7 @@ namespace
             : m_num(num)
         {}
 
-        void operator() (::zhanmm::CloseableThread::Function)
+        void operator() (::empool::CloseableThread::Function)
         {
             ++m_num;
         }
@@ -39,11 +39,11 @@ namespace
 TEST(CloseableThread, test_Ctor)
 {
     {
-        ::zhanmm::CloseableThread thread((&NoOpWork));
+        ::empool::CloseableThread thread((&NoOpWork));
     }
 
     {
-        ::zhanmm::CloseableThread thread(&NoOpWork, &NoOp);
+        ::empool::CloseableThread thread(&NoOpWork, &NoOp);
     }
 }
 
@@ -51,7 +51,7 @@ TEST(CloseableThread, test_normal_usage)
 {
     int num = 0;
     {
-        ::zhanmm::CloseableThread thread((IncNumWork(num)));
+        ::empool::CloseableThread thread((IncNumWork(num)));
     }
 
     ASSERT_EQ(1, num);
@@ -68,7 +68,7 @@ namespace
             : counter(i)
         {}
 
-        void operator() (::zhanmm::CloseableThread::Function CloseFunction)
+        void operator() (::empool::CloseableThread::Function CloseFunction)
         {
             sleep(2);
             CloseFunction();
@@ -83,7 +83,7 @@ TEST(CloseableThread, test_Close)
 {
     int counter = 0;
     {
-        ::zhanmm::CloseableThread t((TestWork(counter)));
+        ::empool::CloseableThread t((TestWork(counter)));
         sleep(1);
         t.Close();
         ASSERT_EQ(0, counter);
@@ -95,7 +95,7 @@ TEST(CloseableThread, test_multiple_Close)
 {
     int counter = 0;
     {
-        ::zhanmm::CloseableThread t((TestWork(counter)));
+        ::empool::CloseableThread t((TestWork(counter)));
         sleep(1);
         t.Close();
         t.Close(); // should not block the execution.
@@ -128,7 +128,7 @@ TEST(CloseableThread, test_ctor_with_FinishAction)
     int counter = 0;
     int finishCounter = 0;
     {
-        ::zhanmm::CloseableThread t((TestWork(counter)),
+        ::empool::CloseableThread t((TestWork(counter)),
                                     FinishAction(finishCounter));
     }
     ASSERT_EQ(1, counter);
@@ -140,7 +140,7 @@ TEST(CloseableThread, test_FinishAcion_execute_before_Finished)
     int counter = 0;
     int finishFlag = 0;
     {
-        ::zhanmm::CloseableThread t((TestWork(counter)),
+        ::empool::CloseableThread t((TestWork(counter)),
                                     FinishAction(finishFlag));
         sleep(1);
         t.Close();

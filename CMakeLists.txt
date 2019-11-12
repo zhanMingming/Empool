@@ -1,17 +1,32 @@
 cmake_minimum_required(VERSION 3.0)
 set(CMAKE_CXX_STANDARD 11)
 
-project(zmpool)
+project(empool)
 
 find_package(GTEST REQUIRED)
 find_package(BOOST REQUIRED)
-#find_package(PTHREAD REQUIRED)
+#find_package(THREAD REQUIRED)
 
 #However, the file(GLOB...) allows for wildcard additions:
 file(GLOB SOURCES "src/*.cpp")
 
-INCLUDE_DIRECTORIES(include)
-INCLUDE_DIRECTORIES(/usr/local/include)
+if(CMAKE_COMPILER_IS_GNUCXX)
+    if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+        set(CMAKE_CXX_FLAGS " -Wall -Werror -pthread -std=c++11 ${CMAKE_CXX_FLAGS}")
+        message(STATUS "optional:-std=c++11")   
+    else()
+        set(CMAKE_CXX_FLAGS "-Wall -Werror -pthread -std=c++11 ${CMAKE_CXX_FLAGS}")
+        message(STATUS "optional:-std=c++11")
+    endif()
+endif(CMAKE_COMPILER_IS_GNUCXX)
+
+
+INCLUDE_DIRECTORIES(include/empool)
+find_path(BOOST_INCLUDE_PATH NAMES  boost/bind.hpp)
+INCLUDE_DIRECTORIES(${BOOST_INCLUDE_PATH})
+
+
+#INCLUDE_DIRECTORIES(/usr/local/include)
 
 #LINK_DIRECTORIES(/usr/local/include)
 
@@ -32,10 +47,10 @@ target_link_libraries(${PROJECT_NAME} ${BOOST_LIBRARIES})
 #target_link_libraries(${PROJECT_NAME} ${PTHREAD_LIBRARIES})
 
 
-
-
 #default CMAKE_INSTALL_PREFIX=/usr/local, so copy targets to this path=/usr/local/lib PATH
 INSTALL(TARGETS ${PROJECT_NAME} DESTINATION lib)
 
 
-INSTALL(FILES "include/Util.h" DESTINATION include)
+#INSTALL(FILES "include/empool/Util.h" DESTINATION include)
+
+INSTALL(DIRECTORY "include/empool" DESTINATION include)

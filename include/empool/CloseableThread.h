@@ -12,7 +12,7 @@
 #include <boost/noncopyable.hpp>
 #include <boost/scoped_ptr.hpp>
 
-namespace zhanmm
+namespace empool
 {
 
     // This class can not be derived.
@@ -66,6 +66,6 @@ namespace zhanmm
 
 
 
-}  // namespace zhanmm
+}  // namespace empool
 
 #endif

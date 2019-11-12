@@ -4,7 +4,7 @@
 #include <errno.h>
 
 using namespace std;
-namespace zhanmm
+namespace empool
 {
 
     void Thread::ProcessCreateError(const int error)
@@ -50,4 +50,4 @@ namespace zhanmm
         }
     }
 
-} //namespace zhanmm
+} //namespace empool

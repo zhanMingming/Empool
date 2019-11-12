@@ -14,7 +14,7 @@
 #include <boost/shared_ptr.hpp>
 
 
-namespace zhanmm
+namespace empool
 {
 
 
@@ -86,6 +86,6 @@ namespace zhanmm
     }
 
 
-}  // namespace zhanmm
+}  // namespace empool
 
 #endif  // ZHANMM_TIMER_H_

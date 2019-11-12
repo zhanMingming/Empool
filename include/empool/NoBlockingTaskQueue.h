@@ -10,7 +10,7 @@
 #include "Mutex.h"
 #include "ConditionVariable.h"
 
-namespace zhanmm
+namespace empool
 {
 
     class TaskBase;
@@ -37,6 +37,6 @@ namespace zhanmm
     };
 
 
-}  // namespace zhanmm
+}  // namespace empool
 
 #endif

@@ -1,7 +1,7 @@
 #include "SingleThreadPool.h"
 #include <iostream>
 
-namespace zhanmm
+namespace empool
 {
 
 
@@ -180,4 +180,4 @@ namespace zhanmm
 
 
 
-} //namespace zhanmm
+} //namespace empool

@@ -6,7 +6,7 @@
 #include <sys/time.h>
 
 using namespace std;
-namespace zhanmm
+namespace empool
 {
 
 
@@ -254,4 +254,4 @@ namespace zhanmm
     }
 
 
-} //namespace zhanmm
+} //namespace empool

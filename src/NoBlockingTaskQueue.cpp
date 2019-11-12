@@ -3,7 +3,7 @@
 #include <assert.h>
 #include <iostream>
 
-namespace zhanmm
+namespace empool
 {
 
 
@@ -55,4 +55,4 @@ namespace zhanmm
     //     return m_tasks.size();
     // }
 
-} //namespace zhanmm
+} //namespace empool

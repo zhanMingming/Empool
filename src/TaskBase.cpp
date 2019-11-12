@@ -6,7 +6,7 @@
 #include <boost/bind.hpp>
 
 using namespace std;
-namespace zhanmm
+namespace empool
 {
 
     namespace
@@ -139,4 +139,4 @@ namespace zhanmm
         return m_state == FINISHED || m_state == CANCELLED;
     }
 
-} //namespace zhanmm
+} //namespace empool

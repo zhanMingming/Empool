@@ -5,7 +5,7 @@
 #include "TaskBase.h"
 
 
-namespace zhanmm {
+namespace empool {
   template<typename Func>
   class FunctorTask : public TaskBase {
   public:
@@ -35,6 +35,6 @@ namespace zhanmm {
   {
     m_functor();
   }
-} // namespace zhanmm
+} // namespace empool
 
 #endif
