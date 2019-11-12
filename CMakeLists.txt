@@ -11,6 +11,9 @@ find_package(BOOST REQUIRED)
 file(GLOB SOURCES "src/*.cpp")
 
 INCLUDE_DIRECTORIES(include)
+INCLUDE_DIRECTORIES(/usr/local/include)
+
+#LINK_DIRECTORIES(/usr/local/include)
 
 # execute file
 #add_executable(${PROJECT_NAME} ${SOURCES})
@@ -29,4 +32,10 @@ target_link_libraries(${PROJECT_NAME} ${BOOST_LIBRARIES})
 #target_link_libraries(${PROJECT_NAME} ${PTHREAD_LIBRARIES})
 
 
-INSTALL(TARGETS ${PROJECT_NAME} DESTINATION /usr/local/lib)
+
+
+#default CMAKE_INSTALL_PREFIX=/usr/local, so copy targets to this path=/usr/local/lib PATH
+INSTALL(TARGETS ${PROJECT_NAME} DESTINATION lib)
+
+
+INSTALL(FILES "include/Util.h" DESTINATION include)
