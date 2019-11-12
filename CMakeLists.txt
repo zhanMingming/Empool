@@ -3,8 +3,8 @@ set(CMAKE_CXX_STANDARD 11)
 
 project(empool)
 
-find_package(GTEST REQUIRED)
-find_package(BOOST REQUIRED)
+#find_package(GTEST REQUIRED)
+#find_package(BOOST REQUIRED)
 #find_package(THREAD REQUIRED)
 
 #However, the file(GLOB...) allows for wildcard additions:
@@ -24,7 +24,7 @@ endif(CMAKE_COMPILER_IS_GNUCXX)
 INCLUDE_DIRECTORIES(include/empool)
 find_path(BOOST_INCLUDE_PATH NAMES  boost/bind.hpp)
 INCLUDE_DIRECTORIES(${BOOST_INCLUDE_PATH})
-
+find_package(BOOST REQUIRED)
 
 #INCLUDE_DIRECTORIES(/usr/local/include)
 
