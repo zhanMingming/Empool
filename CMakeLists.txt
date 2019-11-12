@@ -24,7 +24,7 @@ endif(CMAKE_COMPILER_IS_GNUCXX)
 INCLUDE_DIRECTORIES(include/empool)
 find_path(BOOST_INCLUDE_PATH NAMES  boost/bind.hpp)
 INCLUDE_DIRECTORIES(${BOOST_INCLUDE_PATH})
-find_package(BOOST REQUIRED)
+#find_package(BOOST REQUIRED)
 
 #INCLUDE_DIRECTORIES(/usr/local/include)
 
