@@ -15,7 +15,7 @@
 #include <exception>
 
 
-namespace zhanmm
+namespace empool
 {
 
     const int MAX_WAIT_IN_MS = 1000 * 10;

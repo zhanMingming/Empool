@@ -7,7 +7,7 @@
 #include <boost/bind.hpp>
 #include <queue>
 
-namespace zhanmm {
+namespace empool {
 
 template<typename T, typename QueueImpl = std::queue<T> >
 class BlockingQueue : private ::boost::noncopyable {
@@ -109,7 +109,7 @@ private:
 };
 
 
-}  // namespace zhanmm
+}  // namespace empool
 
 
 #endif /* ZHANMM_BLOCKINGQUEUE_H_ */

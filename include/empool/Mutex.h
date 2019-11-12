@@ -7,7 +7,7 @@
 #include <cassert>
 
 
-namespace zhanmm
+namespace empool
 {
 
 
@@ -42,6 +42,6 @@ namespace zhanmm
     };
 
 
-}  // namespace zhanmm
+}  // namespace empool
 
 #endif

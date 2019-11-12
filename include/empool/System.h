@@ -2,7 +2,7 @@
 #define ZHANMM_SYSTEM_H_
 
 
-namespace zhanmm
+namespace empool
 {
 
 #if defined(__GNUC__)
@@ -42,7 +42,7 @@ namespace zhanmm
     bool IsMainThread();
 
 
-}  // namespace zhanmm
+}  // namespace empool
 
 
 #endif

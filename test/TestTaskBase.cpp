@@ -4,7 +4,7 @@
 #include <gtest/gtest.h>
 #include <unistd.h>
 
-using namespace zhanmm;
+using namespace empool;
 
 namespace {
   struct FakeTask : public TaskBase {

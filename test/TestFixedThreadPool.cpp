@@ -4,7 +4,7 @@
 #include <boost/bind.hpp>
 #include <unistd.h>
 
-using namespace zhanmm;
+using namespace empool;
 using namespace boost;
 using namespace std;
 

@@ -8,11 +8,11 @@ LIB_SUFFIX := .so
 endif
 
 CXXFLAGS += -Wall -Werror
-CXXFLAGS += -I ./include
+CXXFLAGS += -I ./include/empool
 
 LDFLAGS += -pthread
 
-TARGET := libzmpool$(LIB_SUFFIX)
+TARGET := libempool$(LIB_SUFFIX)
 
 TEST_DIR := test
 EXAMPLE_DIR := examples

@@ -13,7 +13,7 @@
 #include <boost/shared_ptr.hpp>
 
 
-namespace zhanmm
+namespace empool
 {
 
 
@@ -47,7 +47,7 @@ namespace zhanmm
         Queue m_queue;
     };
 
-} //namespace zhanmm
+} //namespace empool
 
 
 #endif  // ZHANMM_TIMER_TASK_QUEUE_H_

@@ -5,7 +5,7 @@
 #include <cassert>
 #include <errno.h>
 
-using namespace zhanmm;
+using namespace empool;
 using namespace std;
 
 Mutex::Mutex()

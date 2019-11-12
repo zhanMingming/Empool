@@ -6,7 +6,7 @@
 #include <atomic>
 #include <gtest/gtest.h>
 
-using namespace zhanmm;
+using namespace empool;
 using namespace std;
 
 

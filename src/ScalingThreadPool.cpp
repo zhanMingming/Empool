@@ -1,6 +1,6 @@
 #include "ScalingThreadPool.h"
 #include <iostream>
-namespace zhanmm
+namespace empool
 {
 
 
@@ -346,5 +346,5 @@ namespace zhanmm
         m_state = state;
     }
 
-} // namespace zhanmm
+} // namespace empool
 

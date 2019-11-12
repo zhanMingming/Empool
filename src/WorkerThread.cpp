@@ -13,10 +13,10 @@
 
 
 using namespace std;
-//using namespace zhanmm;
+//using namespace empool;
 using namespace boost;
 
-namespace zhanmm
+namespace empool
 {
 
     namespace
@@ -167,4 +167,4 @@ namespace zhanmm
         std::cout << "get task done" << std::endl;
     }
 
-} //namespace zhanmm
+} //namespace empool

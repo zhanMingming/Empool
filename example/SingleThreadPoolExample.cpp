@@ -2,7 +2,7 @@
 #include "Util.h"
 
 
-using namespace zhanmm;
+using namespace empool;
 
 void func1() {
     std::cout << "func1" << std::endl;

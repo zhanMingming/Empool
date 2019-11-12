@@ -21,7 +21,7 @@
 #include <iostream>
 
 
-namespace zhanmm {
+namespace empool {
   
 
 class FixedThreadPool : public boost::noncopyable {
@@ -60,7 +60,7 @@ boost::shared_ptr<TaskBase> FixedThreadPool::AddTask(Func f)
 }
 
 
-} //namespace zhanmm
+} //namespace empool
 
 
 #endif

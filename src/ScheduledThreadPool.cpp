@@ -1,7 +1,7 @@
 #include "ScheduledThreadPool.h"
 #include <iostream>
 
-namespace zhanmm
+namespace empool
 {
 
 
@@ -197,4 +197,4 @@ namespace zhanmm
         return boost::shared_ptr<TimerTask>();
     }
 
-} //namespace zhanmm
+} //namespace empool

@@ -8,7 +8,7 @@
 #include <unistd.h>
 #include <atomic>
 
-using namespace zhanmm;
+using namespace empool;
 using namespace std;
 
 

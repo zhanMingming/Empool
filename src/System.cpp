@@ -34,7 +34,7 @@ pid_t tid = syscall(__NR_gettid);
 #endif
 */
 
-namespace zhanmm
+namespace empool
 {
 
     __thread int t_cachedTid = 0;
@@ -59,4 +59,4 @@ namespace zhanmm
     }
 
 
-}  // namespace zhanmm
+}  // namespace empool

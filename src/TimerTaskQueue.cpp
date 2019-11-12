@@ -6,7 +6,7 @@
 #include <sys/time.h>
 
 using namespace std;
-namespace zhanmm
+namespace empool
 {
 
     /// Timer::TimerTaskQueue
@@ -98,4 +98,4 @@ namespace zhanmm
     }
 
 
-} //namespace zhanmm
+} //namespace empool

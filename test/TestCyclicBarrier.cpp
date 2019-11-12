@@ -8,7 +8,7 @@
 #include <thread>
 #include"CyclicBarrier.h"
 
-using namespace zhanmm;
+using namespace empool;
 
 CyclicBarrier barrier(2);
 

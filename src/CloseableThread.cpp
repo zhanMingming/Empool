@@ -11,7 +11,7 @@
 using namespace std;
 using namespace boost;
 
-namespace zhanmm
+namespace empool
 {
 
     namespace
@@ -187,4 +187,4 @@ namespace zhanmm
         NotifyFinished();
     }
 
-} //namespace zhanmm
+} //namespace empool

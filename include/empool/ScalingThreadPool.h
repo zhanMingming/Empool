@@ -31,7 +31,7 @@
 
 */
 
-namespace zhanmm
+namespace empool
 {
 
     const int  TASK_QUEUE_SIZE_THRESHOLD = 1024;
@@ -137,6 +137,6 @@ namespace zhanmm
         return DoAddTask(MakeFunctorTask(f));
     }
 
-} //namespace zhanmm
+} //namespace empool
 
 #endif
