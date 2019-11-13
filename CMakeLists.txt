@@ -3,6 +3,11 @@ set(CMAKE_CXX_STANDARD 11)
 
 project(empool)
 
+
+
+LIST(APPEND CMAKE_INCLUDE_PATH "/usr/include")
+LIST(APPEND CMAKE_LIBRARY_PATH "/usr/lib")
+LIST(APPEND CMAKE_LIBRARY_PATH "/usr/lib64")
 #find_package(GTEST REQUIRED)
 #find_package(BOOST REQUIRED)
 #find_package(THREAD REQUIRED)
@@ -23,6 +28,9 @@ endif(CMAKE_COMPILER_IS_GNUCXX)
 
 INCLUDE_DIRECTORIES(include/empool)
 find_path(BOOST_INCLUDE_PATH NAMES  boost/bind.hpp)
+if(NOT BOOST_INCLUDE_PATH)
+    message(FATAL_ERROR "fail to find boost")
+endif()
 INCLUDE_DIRECTORIES(${BOOST_INCLUDE_PATH})
 #find_package(BOOST REQUIRED)
 
