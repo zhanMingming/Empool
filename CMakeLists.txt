@@ -50,7 +50,7 @@ add_library(${PROJECT_NAME} SHARED ${SOURCES})
 #add_library(${PROJECT_NAME} STATIC ${SOURCES})
 
 
-target_link_libraries(${PROJECT_NAME} ${GTEST_LIBRARIES})
+#target_link_libraries(${PROJECT_NAME} ${GTEST_LIBRARIES})
 target_link_libraries(${PROJECT_NAME} ${BOOST_LIBRARIES})
 #target_link_libraries(${PROJECT_NAME} ${PTHREAD_LIBRARIES})
 
