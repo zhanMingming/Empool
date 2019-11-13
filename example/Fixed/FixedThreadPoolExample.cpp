@@ -1,6 +1,6 @@
-#include "ThreadPoolManager.h"
-#include "Mutex.h"
-#include "TaskBase.h"
+#include <empool/ThreadPoolManager.h>
+#include <empool/Mutex.h>
+#include <empool/TaskBase.h>
 #include <atomic>
 #include <iostream>
 #include <boost/shared_ptr.hpp>
@@ -15,7 +15,6 @@ void func() {
     MutexLocker l(m_mutex);
     ++a;
 }
-
 
 
 int main(void) {
