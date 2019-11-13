@@ -1,4 +1,6 @@
 ## 一.介绍
+
+
 Empool 是一个线程池管理库，可以创建以下四种不同类型的线程池。
 
 - FixedThreadPool      固定大小线程池 
@@ -16,16 +18,16 @@ PRIORITY: 按照任务的优先级执行任务
 
 Empool 依赖 Boost库1.54.0版本及以上、GCC 4.8及以上、CMake 3.0 版本及以上
 
-#### 安装依赖
+### 安装依赖
 
 
-编译工具
+###### 安装编译工具
 ```
 yum install gcc-c++ make  git 
 
 ```
 
-安装 cmake 3.12版本
+###### 安装 cmake 3.12版本
 
 ```
 #cmake 提供的下载地址为：https://cmake.org/files/
@@ -38,7 +40,7 @@ gmake
 make install
 
 ```
-安装 boost 1.71.0 版本
+###### 安装 boost 1.71.0 版本
 ```
 wget https://dl.bintray.com/boostorg/release/1.71.0/source/boost_1_71_0.tar.gz
 
@@ -50,7 +52,7 @@ cd boost_1_71_0
 
 ```
 
-#### 安装Empool
+### 安装Empool
 
 ```
 git clone https://github.com/zhanMingming/Empool.git
@@ -66,8 +68,11 @@ make && make install
 ```
 
 ## 三：例子
+具体的完整例子可以参考 example 目录下，提供四种创建线程池的具体用法，以下只是概述性地介绍其用法。
+
 
 #### ScalingThreadPool 用法
+
 
 一般用法：
 
@@ -136,3 +141,5 @@ singlePool3->AddTask(func, 100);
 ```
 对于SingleThreadPool 使用PRIORITY 模式时，需要在添加任务时指定优先级。
 这里的规则是数字越小，优先级越高。
+
+
