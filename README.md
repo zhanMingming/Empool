@@ -1,36 +1,42 @@
-## 一.介绍
+## I.Introduction
+Empool is a thread pool management library, which can create four different types of thread pools.
+
+- Fixedthreadpool, Fixed size thread pool.
+
+- Scalingthreadpool dynamic size thread pool, Dynamically increase or decrease the number of threads according to the busy degree of threads.
+
+- Scheduledthreadpool, Fixed length thread pool, Supporting scheduled and periodic task execution.
+
+- Singlethreadpool a one thread thread thread pool. The only working thread performs tasks. It supports three operation modes (FIFO, LIFO, priority).
+
+For three modes of operation in singlethreadpool:
 
 
-Empool 是一个线程池管理库，可以创建以下四种不同类型的线程池。
 
-- FixedThreadPool      固定大小线程池 
-- ScalingThreadPool    动态大小线程池，根据线程的繁忙程度，动态增加或减少线程数量
-- ScheduledThreadPool  定长线程池，支持定时及周期性任务执行
-- SingleThreadPool    一个单线程化的线程池, 唯一的工作线程来执行任务，支持三种运行模式(FIFO、LIFO、PRIORITY)
-```
-对于 SingleThreadPool 中 三种运行模式：
-FIFO：表明任务会按照先进先出的模式执行
-LIFO：按照先进后出的模式执行任务
-PRIORITY: 按照任务的优先级执行任务
-```
+- FIFO: Indicates that the task will be executed in FIFO mode.
 
-## 二.Linux 系统下安装
+- LIFO: Perform tasks according to the mode of first in first out.
 
-Empool 依赖 Boost库1.54.0版本及以上、GCC 4.8及以上、CMake 3.0 版本及以上
-
-### 安装依赖
+- Priority: Perform tasks according to their priority.
 
 
-###### 安装编译工具
+## II.Linux system installation
+
+Empool depends on boost library 1.54.0+, GCC 4.8+, cmake 3.0+
+
+### Installation dependency
+
+
+###### Install compilation tools
 ```
 yum install gcc-c++ make  git 
 
 ```
 
-###### 安装 cmake 3.12版本
+###### Install cmake version 3.12
 
 ```
-#cmake 提供的下载地址为：https://cmake.org/files/
+#cmake ：https://cmake.org/files/
 
 wget https://cmake.org/files/v3.12/cmake-3.12.0.tar.gz
 tar xzvf cmake-3.12.0.tar.gz
@@ -40,7 +46,7 @@ gmake
 make install
 
 ```
-###### 安装 boost 1.71.0 版本
+###### Install boost version 1.71.0
 ```
 wget https://dl.bintray.com/boostorg/release/1.71.0/source/boost_1_71_0.tar.gz
 
@@ -52,7 +58,7 @@ cd boost_1_71_0
 
 ```
 
-### 安装Empool
+### Install Empool
 
 ```
 git clone https://github.com/zhanMingming/Empool.git
@@ -67,14 +73,14 @@ make && make install
 
 ```
 
-## 三：例子
-具体的完整例子可以参考 example 目录下，提供四种创建线程池的具体用法，以下只是概述性地介绍其用法。
+
+## III：Examples
+
+For specific and complete examples, please refer to the example directory to provide four specific uses for creating thread pools. The following is only an overview of its use.
 
 
-#### ScalingThreadPool 用法
+#### ScalingThreadPool Example
 
-
-一般用法：
 
 ```
 std::atomic<int>  a(0);
@@ -83,18 +89,25 @@ void func() {
     ++a;
 }
 
-#初始化 ScalingThreadPool，线程数范围为4-8
+#Initializing the scalingthreadpool with a range of 4-8 threads
 ScalingThreadPool *scalingPool = ThreadPoolManager::newScalingThreadPool(4, 8);
 
 
-# 添加Task任务
+# Add task
 scalingPool->AddTask(func);
 
+//Closing the thread pool blocking method waits for all threads to end
+scalingPool->ShutDownNow();
+
+//Non blocking, send a close signal to each thread to return
+
+//scalingPool->ShutDown();
+
 ```
+For the method of closing thread pool, all four thread pools are the same.
 
-#### FixedThreadPool 用法
+#### FixedThreadPool Example
 
-一般用法：
 ```
 void func() {
     do_something();
@@ -105,9 +118,8 @@ FixedThreadPool *fixedPool = ThreadPoolManager::newFixedThreadPool(8);
 fixedPool->AddTask(func);
 ```
 
-#### ScheduledThreadPool 用法
+#### ScheduledThreadPool Example
 
-一般用法：
 ```
 void func() {
     do_something();
@@ -115,31 +127,31 @@ void func() {
 
 ScheduledThreadPool *scheduledPool = ThreadPoolManager::newScheduledThreadPool(4);
 
-// 添加定时Task,任务将在100ms 之后执行(只执行一次)
+// Add a scheduled task, which will be executed in 100ms (once only)
+
 scheduledPool->AddCronTimerTask(func, 100);
 
-//  添加周期任务, 任务执行的时间间隔为1000ms
+//  Add periodic tasks, and the time interval of task execution is 1000ms
 scheduledPool->AddCycleTimerTask(func, 1000);
 
 ```
-#### SingleThreadPool 用法
+#### SingleThreadPool Example
 
-一般用法：
+
 ```
-// FIFO模式运行，添加的任务将会以先进先出的方式执行
+// FIFO mode operation, the added tasks will be executed in FIFO mode.
 SingleThreadPool *singlePool1 = ThreadPoolManager::newSingleThreadPool(FIFO);
 singlePool1->AddTask(func);
 
-//LIFO 模式运行，添加的任务将会以先进后出的方式执行
+//LIFO mode operation, the added tasks will be executed in the way of first in last out.
 SingleThreadPool *singlePool2 = ThreadPoolManager::newSingleThreadPool(LIFO);
 singlePool2->AddTask(func);
 
-// PROIORITY 模式运行，根据任务的优先级执行任务
+// The priority mode runs, and the task is executed according to the priority of the task.
 SingleThreadPool *singlePool3 = ThreadPoolManager::newSingleThreadPool(PRIORITY);
 singlePool3->AddTask(func, 100);
 
 ```
-对于SingleThreadPool 使用PRIORITY 模式时，需要在添加任务时指定优先级。
-这里的规则是数字越小，优先级越高。
-
+When using priority mode for SingleThreadPool, you need to specify the priority when adding tasks.
+The rule here is that the smaller the number, the higher the priority.
 
