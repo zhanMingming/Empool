@@ -15,7 +15,7 @@ namespace
 #if defined(__APPLE__)
         uint64_t tid64;
         pthread_threadid_np(NULL, &tid64);
-        std::cout << "tid64:" << tid64 << std::endl;
+        //std::cout << "tid64:" << tid64 << std::endl;
         return (pid_t)tid64;
 #else
         return static_cast<pid_t>(::syscall(SYS_gettid));
@@ -48,7 +48,7 @@ namespace empool
         if (t_cachedTid == 0)
         {
             t_cachedTid = gettid();
-            std::cout << "tid:" << t_cachedTid << std::endl;
+            //std::cout << "tid:" << t_cachedTid << std::endl;
             t_tidStringLength = snprintf(t_tidString, sizeof(t_tidString), "%5d ", t_cachedTid);
         }
     }

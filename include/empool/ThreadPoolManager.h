@@ -6,44 +6,38 @@
 #include "ScalingThreadPool.h"
 #include "SingleThreadPool.h"
 
-
-
 namespace empool
 {
-
-
 
     class ThreadPoolManager
     {
     public:
-        //创建一个可重用固定线程数的线程池，以共享的无界队列方式来运行这些线程。
+        //Create a pool of threads that can reuse a fixed number of threads and run them in a shared, unbounded queue.
         static FixedThreadPool *newFixedThreadPool(int threadNum = 4)
         {
             return new FixedThreadPool(threadNum);
         }
-        //动态线程池
+        //ScalingThreadPool 
         static ScalingThreadPool *newScalingThreadPool(int minThreadSize = 4, int maxThreadSize = 8)
         {
             return new ScalingThreadPool(minThreadSize, maxThreadSize);
         }
 
 
-        //newScheduledThreadPool创建一个定长线程池，支持定时及周期性任务执行
+        //Create a fixed length thread pool to support scheduled and periodic task execution
         static ScheduledThreadPool *newScheduledThreadPool(int threadNum = 1)
         {
             return new ScheduledThreadPool(threadNum);
         }
 
 
-        // 创建一个单线程化的线程池，它只会用唯一的工作线程来执行任务，
-        // 保证所有任务按照指定顺序(FIFO, LIFO, 优先级)执行
+        // Create a single threaded thread pool that only uses unique worker threads to perform tasks
+        // Ensure that all tasks are executed in the specified order (FIFO, LIFO, PRIORITY)
         static   SingleThreadPool* newSingleThreadPool(RunMode mode) 
         {
             return new SingleThreadPool(mode);
         }
-
     };
-
 
 } //namespace empool
 

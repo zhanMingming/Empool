@@ -53,7 +53,7 @@ namespace empool
                 }
                 if (isStarted)
                 {
-                    std::cout << "start stop" << std::endl;
+                    // std::cout << "start stop" << std::endl;
                     now == true ? t->ShutDownNow() : t->ShutDown();
                 }
             }

@@ -41,7 +41,7 @@ namespace empool
                                const FinishAction &action, const JudgeAction judge)
         : m_judge(judge)
     {
-        std::cout << "start workerThread" << std::endl;
+        //std::cout << "start workerThread" << std::endl;
         Init(taskQueue, action);
     }
 
@@ -88,22 +88,6 @@ namespace empool
         m_thread->AsyncClose();
     }
 
-    // void WorkerThread::CancelAsync()
-    // {
-    //     m_thread->CancelAsync();
-    // }
-
-    // void WorkerThread::CancelNow()
-    // {
-    //     {
-    //         MutexLocker l(m_runningTaskGuard);
-    //         if (m_runningTask)
-    //         {
-    //             m_runningTask->CancelAsync();
-    //         }
-    //     }
-    //     Cancel();
-    // }
 
     void WorkerThread::ProcessError(const std::exception &e)
     {
@@ -128,7 +112,7 @@ namespace empool
             if (GetTask(m_runningTask, MAX_WAIT_IN_MS))
             {
                 // if can't getTask in wait_in_ms, so AsyncClose()
-                std::cout << "wait too long exit" << std::endl;
+                //std::cout << "wait too long exit" << std::endl;
                 if (m_judge())
                 {
                     AsyncClose();
@@ -160,11 +144,11 @@ namespace empool
 
     void WorkerThread::GetTask()
     {
-        std::cout << "ready get task" << std::endl;
+        //std::cout << "ready get task" << std::endl;
         //std::cout << "ready get Task" << std::endl;
         //MutexLocker l(m_runningTaskGuard);
         m_runningTask = m_taskQueue->Pop();
-        std::cout << "get task done" << std::endl;
+        //std::cout << "get task done" << std::endl;
     }
 
 } //namespace empool

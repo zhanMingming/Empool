@@ -49,7 +49,7 @@ namespace empool
         :  m_state(INIT), m_mutex(), m_stateGuard(m_mutex), m_isRequestClose(false), m_workFunction(workFunction),
           m_finishAction(finishAction)
     {
-        std::cout << "start CloseableThread" << std::endl;
+        //std::cout << "start CloseableThread" << std::endl;
         Init();
     }
 
@@ -104,7 +104,7 @@ namespace empool
             }
             catch (const std::exception &e)
             {
-                std::cout << "thread_create error" << std::endl;
+                //std::cout << "thread_create error" << std::endl;
                 ProcessError(e);
             }
         }
@@ -157,7 +157,7 @@ namespace empool
     void CloseableThread::NotifyFinished()
     {
         SetState(FINISHED);
-        std::cout << "CloseableThread : set FINISHED" << std::endl;
+        //std::cout << "CloseableThread : set FINISHED" << std::endl;
         ConditionNotifyAllLocker l(m_stateGuard,
                                    BOOST_BIND(&CloseableThread::IsRequestClose, this));
     }

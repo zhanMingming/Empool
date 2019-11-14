@@ -66,14 +66,14 @@ namespace empool
         : m_threadId(0), m_isStart(false)
     {
 
-        std::cout << "thread contructor" << std::endl;
+        //std::cout << "thread contructor" << std::endl;
         Args<Func> *args = new Args<Func>(&m_threadId, f);
 
         int error =  pthread_create(&m_threadData, NULL,
                                     ThreadFunction<Func>, args);
         if (error != 0)
         {
-            std::cout << "thread make fail " << std::endl;
+            //std::cout << "thread make fail " << std::endl;
             ProcessCreateError(error);
         }
         m_isStart = true;
@@ -86,8 +86,8 @@ namespace empool
 
         boost::scoped_ptr<Args<Func> > args(reinterpret_cast<Args<Func>*>(arg));
         *(args->threadId) = Tid();
-        std::cout << "ThreadFunction" << std::endl;
-        std::cout << *(args->threadId) << std::endl;
+        //std::cout << "ThreadFunction" << std::endl;
+        //std::cout << *(args->threadId) << std::endl;
 
         try
         {

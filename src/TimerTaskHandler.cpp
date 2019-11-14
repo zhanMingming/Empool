@@ -61,7 +61,7 @@ namespace empool
                 while (m_task_queue.IsEmpty())
                 {
                     checkFunc();
-                    std::cout << "thread wait" << std::endl;
+                    //std::cout << "thread wait" << std::endl;
                     //m_task_queue.TimedWait(MAX_WAIT_TIME_MS_WEHN_QUEUE_IS_EMPTY);
                     m_task_queue.Wait();
 
