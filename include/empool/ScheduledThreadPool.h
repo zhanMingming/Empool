@@ -59,7 +59,7 @@ namespace empool
         boost::shared_ptr<TimerTask> AddCycleTimerTask(Func f,
                 TimeValue period_in_ms, bool is_run_now = true);
 
-        //异步关闭，如果有task 正在执行，则等待task 完成后，进行关闭
+        //
         void ShutDown();
         //void StopAsync();
         //

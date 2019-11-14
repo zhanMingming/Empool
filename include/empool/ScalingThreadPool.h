@@ -25,9 +25,13 @@
 
 
 /*
-1.初始化 先new 出 minThreadSize 的线程。
-2. 何时增加线程， 当taskQueue 累计的任务 达到某个阈值，则增加线程，保证当前线程数 < maxThreadSize
-3. 何时减少线程， 当线程获取任务超过 某阈值 还没有获取到任务，或者距离上次运行任务超过30s,则关闭线程。
+1. Initialize the thread with minthreadsize first.
+
+2. When to add a thread? When the cumulative task of taskqueue reaches a certain threshold, 
+increase the thread to ensure the current thread number < maxthreadsize
+
+3. When to reduce the number of threads? When a thread gets a task beyond a certain threshold 
+and has not yet got a task, or when it is more than 30s from the last running task, close the thread.
 
 */
 
@@ -88,7 +92,7 @@ namespace empool
         bool SubWorkerThread(int threadId);
         void AddWorkerThreadIdToSubVector(int threadId);
         void HandleWorkerThread(const Function &checkFunc);
-        bool OJudgeFunc();
+        bool ContraryJudgeFunc();
         bool JudgeFunc();
         void NotifyMonitorThread();
 

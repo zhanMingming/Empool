@@ -45,7 +45,7 @@ bool ConditionVariable::TimeWait(TimeValue delay_in_ms)
     struct timespec timeout;
 
     gettimeofday(&now, NULL);
-    std::cout << "delay_in_ms: " << static_cast<long>(delay_in_ms / 1000) << std::endl;
+    //std::cout << "delay_in_ms: " << static_cast<long>(delay_in_ms / 1000) << std::endl;
     timeout.tv_sec = now.tv_sec + static_cast<long>(delay_in_ms / 1000);
     timeout.tv_nsec = now.tv_usec +
                       static_cast<long>(delay_in_ms % 1000) * 1000;

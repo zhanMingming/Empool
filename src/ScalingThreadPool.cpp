@@ -36,15 +36,14 @@ namespace empool
         for (size_t index = 0; index < m_corePoolSize; ++index)
         {
 
-            std::cout << "start thread" << std::endl;
+            //std::cout << "start thread" << std::endl;
             boost::shared_ptr<WorkerThread> t(new WorkerThread(m_taskQueue, boost::protect(boost::bind(&ScalingThreadPool::
                                               NotifyWhenThreadsStop, this,  _1)), boost::protect(boost::bind(&ScalingThreadPool::
                                                       IfMoreThan, this))));
             //sleep(1);
-            std::cout << "threadid:" << t->GetThreadId() << std::endl;
-            std::cout << "insert begin" << std::endl;
+            //std::cout << "threadid:" << t->GetThreadId() << std::endl;
+            
             m_threads.insert(std::make_pair(t->GetThreadId(), t));
-            std::cout << "insert finish" << std::endl;
         }
 
 
@@ -57,7 +56,7 @@ namespace empool
 
     ScalingThreadPool::~ScalingThreadPool()
     {
-        std::cout << "~ScalingThreadPool" << std::endl;
+        //std::cout << "~ScalingThreadPool" << std::endl;
         // keep other thread from pushing more tasks
         ShutDownNow();
 
@@ -76,7 +75,7 @@ namespace empool
 
     bool ScalingThreadPool::IfMoreThan() const
     {
-        std::cout << "ifmorethan:" << GetThreadNum() << ":" << GetCorePoolSize() << std::endl;
+        //std::cout << "ifmorethan:" << GetThreadNum() << ":" << GetCorePoolSize() << std::endl;
         //std::cout << "IfMoreThan:" << (GetThreadNum() > GetCorePoolSize()) << std::endl;
         return GetThreadNum() > GetCorePoolSize();
     }
@@ -99,9 +98,6 @@ namespace empool
     //   return task;
     // }
 
-
-    // 同步stop ，需要等待
-
     void ScalingThreadPool::ShutDownNow()
     {
         using boost::bind;
@@ -118,8 +114,6 @@ namespace empool
     }
 
 
-    // 异步stop
-
     void ScalingThreadPool::ShutDown()
     {
         bool flag = false;
@@ -127,28 +121,19 @@ namespace empool
         {
 
             SetState(STOP);
-            // NOTE: there may be some tasks pushed after these EndTasks,
-            //     because Sm_isRequestShutDown is locked alone, and if a thread
-            //     calling AddTask before this StopAsync and stop running,
-            //     then StopAsync is run, push EndTasks and the thread is
-            //     running again, then the tasks will be pushed after the
-            //     EndTasks.
-            // BOOST_FOREACH(boost::shared_ptr<WorkerThread>& t, m_threads)
-            // {
-            //   t->AsyncClose();
-            // }
+
             {
                 MutexLocker lock(m_addOrSubThreadNumGuard);
                 for (std::unordered_map<int, boost::shared_ptr<WorkerThread> >::iterator iter = m_threads.begin(); iter != m_threads.end(); ++iter)
                 {
                     iter->second->AsyncClose();
-                    std::cout << "AsyncClose" << std::endl;
+                    //std::cout << "AsyncClose" << std::endl;
                 }
                 const size_t threadNum = m_threads.size();
                 for (size_t i = 0; i < threadNum; ++i)
                 {
                     m_taskQueue->Push(boost::shared_ptr<TaskBase>(new EndTask()));
-                    std::cout << "put task done" << std::endl;
+                    //std::cout << "put task done" << std::endl;
                 }
             }
 
@@ -164,22 +149,7 @@ namespace empool
 
     }
 
-    //
-    // void ScalingThreadPool::Stop()
-    // {
-    //   StopAsync();
 
-    //   BOOST_FOREACH(boost::shared_ptr<WorkerThread>& t, m_threads)
-    //     {
-    //       t->AsyncClose();
-    //     }
-
-    //   // BOOST_FOREACH(boost::shared_ptr<WorkerThread>& t, m_threads)
-    //   //   {
-    //   // t->CancelNow();
-    //   //   }
-    // }
-    //
 
     bool ScalingThreadPool::CheckIsRequestShutDown() const
     {
@@ -189,7 +159,7 @@ namespace empool
     bool  ScalingThreadPool::AddWorkerThread()
     {
 
-        std::cout << "add worker" << std::endl;
+        //std::cout << "add worker" << std::endl;
 
         boost::shared_ptr<WorkerThread>  newWorkerThread(new WorkerThread(m_taskQueue, boost::protect(boost::bind(&ScalingThreadPool::
                 NotifyWhenThreadsStop, this, _1)), boost::protect(boost::bind(&ScalingThreadPool::
@@ -205,7 +175,7 @@ namespace empool
 
     bool ScalingThreadPool::SubWorkerThread(int threadId)
     {
-        std::cout << "SubWorkerThread : " << threadId << std::endl;
+        //std::cout << "SubWorkerThread : " << threadId << std::endl;
         //MutexLocker lock(m_addOrSubThreadNumGuard);
         std::unordered_map<int, boost::shared_ptr<WorkerThread> >::iterator iter = m_threads.find(threadId);
         if (iter != m_threads.end())
@@ -228,7 +198,7 @@ namespace empool
 
 
 
-    bool ScalingThreadPool::OJudgeFunc()
+    bool ScalingThreadPool::ContraryJudgeFunc()
     {
         return !JudgeFunc();
     }
@@ -250,14 +220,14 @@ namespace empool
             //MutexLocker lock(m_addOrSubThreadNumGuard);
             ConditionWaitLocker cond(m_addOrSubThreadCond);
             //m_addOrSubThreadCond.wait();
-            if (!cond.TimeWait(boost::bind(&ScalingThreadPool::OJudgeFunc, this), 10 * 1000))
+            if (!cond.TimeWait(boost::bind(&ScalingThreadPool::ContraryJudgeFunc, this), 10 * 1000))
             {
-                std::cout << "handleWorkerThread wait too long so exit" << std::endl;
+                //std::cout << "handleWorkerThread wait too long so exit" << std::endl;
             }
 
             checkFunc();
 
-            std::cout << "m_monitorThread be wake up" << std::endl;
+            //std::cout << "m_monitorThread be wake up" << std::endl;
             if (m_taskQueue->Size() > TASK_QUEUE_SIZE_THRESHOLD && m_threads.size() < m_maxThreadSize)
             {
                 AddWorkerThread();
@@ -307,7 +277,7 @@ namespace empool
         {
             MutexLocker l(m_stoppedThreadNumGuard);
             stoppedThreadNum = ++m_stoppedThreadNum;
-            std::cout << "stopThreadNum:" << stoppedThreadNum << std::endl;
+            //std::cout << "stopThreadNum:" << stoppedThreadNum << std::endl;
         }
 
         if (stoppedThreadNum >= m_threads.size())
