@@ -1,9 +1,6 @@
 #include "BlockingTaskQueue.h"
 
-
 namespace empool {
-
-
 
 void BlockingTaskQueue::Push(boost::shared_ptr<TaskBase> task)
 {

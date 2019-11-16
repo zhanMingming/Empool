@@ -1,14 +1,6 @@
-/*
-* @Author: zhanmingming
-* @Date:   2019-11-03 17:26:48
-* @Last Modified by:   zhanmingming
-* @Last Modified time: 2019-11-03 17:40:47
-*/
 #include "FixedThreadPool.h"
 
-
 namespace empool {
-
 
 FixedThreadPool::FixedThreadPool(const size_t threadNum)
 :scalingThreadPool(threadNum, threadNum)

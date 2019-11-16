@@ -2,10 +2,6 @@
 #include <iostream>
 namespace empool
 {
-
-
-    //typedef ScalingThreadPool<> LScalingThreadPool;
-
     // Implementation
     namespace
     {
@@ -84,10 +80,6 @@ namespace empool
     {
         return DoAddTask(task);
     }
-
-
-
-
 
     //
     // template<typename T, typename Func>

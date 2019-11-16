@@ -16,7 +16,6 @@
 namespace empool
 {
 
-
     class TimerTaskQueue
     {
     public:
