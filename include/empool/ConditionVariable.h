@@ -5,139 +5,144 @@
 #include <pthread.h>
 #include <boost/noncopyable.hpp>
 
-namespace empool {
+namespace empool
+{
 
 
-class ConditionVariable : private boost::noncopyable {
-
-public:
-    explicit ConditionVariable(Mutex& m);
-    ~ConditionVariable();
-
-    /// NOTE: Normally you should not use the following
-    /// functions directly. Consider use ConditionWaitLocker
-    /// and ConditionNotifyLocker first.
-    void Notify();
-    void NotifyAll();
-
-    void Wait();
-
-    /// returns true when the condition is notified,
-    /// otherwise return false on time expired
-    bool TimeWait(TimeValue delay_in_ms);
-
-    void Lock();
-    void Unlock();
-
-    Mutex& m_mutex;
-    pthread_cond_t m_cond;
-};
-
-
-class ConditionWaitLocker : private boost::noncopyable {
-public:
-    /// This ctor is usually used with TimedWait.
-    /// If you don't use TimedWait, DO NOT use this ctor.
-    explicit ConditionWaitLocker(ConditionVariable& c)
-    : m_conditionVariable(c)
-    {}
-
-    template<typename WaitConditionFunc>
-    ConditionWaitLocker(ConditionVariable& c, WaitConditionFunc f)
-    : m_conditionVariable(c)
+    class ConditionVariable : private boost::noncopyable
     {
-        m_conditionVariable.Lock();
-        while (f())
-        {
-            m_conditionVariable.Wait();
-        }
-    }
 
-    /// returns *true* when the condition is notified and
-    /// function f returns true, otherwise returns *false*
-    /// when time expired.
-    /// Note that when the function returns, the mutex is locked.
-    template<typename WaitConditionFunc>
-    bool TimeWait(WaitConditionFunc f, TimeValue delay_in_ms)
+    public:
+        explicit ConditionVariable(Mutex &m);
+        ~ConditionVariable();
+
+        /// NOTE: Normally you should not use the following
+        /// functions directly. Consider use ConditionWaitLocker
+        /// and ConditionNotifyLocker first.
+        void Notify();
+        void NotifyAll();
+
+        void Wait();
+
+        /// returns true when the condition is notified,
+        /// otherwise return false on time expired
+        bool TimeWait(TimeValue delay_in_ms);
+
+        void Lock();
+        void Unlock();
+
+        Mutex &m_mutex;
+        pthread_cond_t m_cond;
+    };
+
+
+    class ConditionWaitLocker : private boost::noncopyable
     {
-        m_conditionVariable.Lock();
-        while (f())
+    public:
+        /// This ctor is usually used with TimedWait.
+        /// If you don't use TimedWait, DO NOT use this ctor.
+        explicit ConditionWaitLocker(ConditionVariable &c)
+            : m_conditionVariable(c)
+        {}
+
+        template<typename WaitConditionFunc>
+        ConditionWaitLocker(ConditionVariable &c, WaitConditionFunc f)
+            : m_conditionVariable(c)
         {
-            if (!m_conditionVariable.TimeWait(delay_in_ms))
+            m_conditionVariable.Lock();
+            while (f())
             {
-                return false;
+                m_conditionVariable.Wait();
             }
         }
-        return true;
-    }
 
-    ~ConditionWaitLocker()
-    {
-        m_conditionVariable.Unlock();
-    }
-
-private:
-    ConditionVariable& m_conditionVariable;
-};
-
-
-
-class ConditionNotifyLocker : private boost::noncopyable {
-public:
-    template<typename NotifyConditionFunc>
-    explicit ConditionNotifyLocker(ConditionVariable& c,
-            NotifyConditionFunc f)
-    : m_conditionVariable(c)
-    {
-        m_conditionVariable.Lock();
-        if (f())
+        /// returns *true* when the condition is notified and
+        /// function f returns true, otherwise returns *false*
+        /// when time expired.
+        /// Note that when the function returns, the mutex is locked.
+        template<typename WaitConditionFunc>
+        bool TimeWait(WaitConditionFunc f, TimeValue delay_in_ms)
         {
+            m_conditionVariable.Lock();
+            while (f())
+            {
+                if (!m_conditionVariable.TimeWait(delay_in_ms))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        ~ConditionWaitLocker()
+        {
+            m_conditionVariable.Unlock();
+        }
+
+    private:
+        ConditionVariable &m_conditionVariable;
+    };
+
+
+
+    class ConditionNotifyLocker : private boost::noncopyable
+    {
+    public:
+        template<typename NotifyConditionFunc>
+        explicit ConditionNotifyLocker(ConditionVariable &c,
+                                       NotifyConditionFunc f)
+            : m_conditionVariable(c)
+        {
+            m_conditionVariable.Lock();
+            if (f())
+            {
+                // TODO: change to notify after unlock
+                m_conditionVariable.Notify();
+            }
+            // The user code should set the condition to true
+        }
+
+        explicit ConditionNotifyLocker(ConditionVariable &c)
+            : m_conditionVariable(c)
+        {
+            m_conditionVariable.Lock();
             // TODO: change to notify after unlock
             m_conditionVariable.Notify();
         }
-        // The user code should set the condition to true
-    }
 
-    explicit ConditionNotifyLocker(ConditionVariable& c)
-    : m_conditionVariable(c)
-    {
-        m_conditionVariable.Lock();
-        // TODO: change to notify after unlock
-        m_conditionVariable.Notify();
-    }
-
-    ~ConditionNotifyLocker()
-    {
-        m_conditionVariable.Unlock();
-    }
-
-private:
-    ConditionVariable& m_conditionVariable;
-};
-
-
-class ConditionNotifyAllLocker : private boost::noncopyable {
-public:
-    template<typename NotifyConditionFunc>
-    explicit ConditionNotifyAllLocker(ConditionVariable& c,
-            NotifyConditionFunc f)
-    : m_conditionVariable(c)
-    {
-        m_conditionVariable.Lock();
-        if (f())
+        ~ConditionNotifyLocker()
         {
-            m_conditionVariable.NotifyAll();
+            m_conditionVariable.Unlock();
         }
-    }
 
-    ~ConditionNotifyAllLocker()
+    private:
+        ConditionVariable &m_conditionVariable;
+    };
+
+
+    class ConditionNotifyAllLocker : private boost::noncopyable
     {
-        m_conditionVariable.Unlock();
-    }
+    public:
+        template<typename NotifyConditionFunc>
+        explicit ConditionNotifyAllLocker(ConditionVariable &c,
+                                          NotifyConditionFunc f)
+            : m_conditionVariable(c)
+        {
+            m_conditionVariable.Lock();
+            if (f())
+            {
+                m_conditionVariable.NotifyAll();
+            }
+        }
 
-private:
-    ConditionVariable& m_conditionVariable;
-};
+        ~ConditionNotifyAllLocker()
+        {
+            m_conditionVariable.Unlock();
+        }
+
+    private:
+        ConditionVariable &m_conditionVariable;
+    };
 
 }  //empool
 
