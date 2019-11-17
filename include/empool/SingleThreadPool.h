@@ -23,8 +23,6 @@
 namespace empool
 {
 
-
-    
     class PriorityTask : public TaskBase
     {
     public:

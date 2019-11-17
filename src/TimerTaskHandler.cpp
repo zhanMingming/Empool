@@ -9,7 +9,6 @@ using namespace std;
 namespace empool
 {
 
-
     TimeValue GetCurrentTime()
     {
         struct timeval now;
@@ -217,7 +216,6 @@ namespace empool
 
             now == true ? m_thread->Close() : m_thread->AsyncClose();
         }
-
 
     }
 

@@ -25,7 +25,6 @@
 namespace empool
 {
 
-
     class ScheduledThreadPool : public boost::noncopyable
     {
     private:

@@ -16,9 +16,6 @@
 
 namespace empool
 {
-
-
-
     //TimeValue GetCurrentTime();
 
     class TimerTaskHandler;

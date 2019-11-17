@@ -35,11 +35,14 @@ namespace empool
         private:
             string m_exitMessage;
         };
+
+        void Noop(int threadId) {}
+
     }  // namespace
 
-
     CloseableThread::CloseableThread(WorkFunction workFunction)
-        :m_state(INIT), m_mutex(), m_stateGuard(m_mutex), m_isRequestClose(false), m_workFunction(workFunction)
+        : m_state(INIT), m_mutex(), m_stateGuard(m_mutex), m_isRequestClose(false), m_workFunction(workFunction),
+          m_finishAction(Noop)
     {
         Init();
     }
@@ -47,7 +50,7 @@ namespace empool
     CloseableThread::CloseableThread(
         WorkFunction workFunction, FinishAction finishAction)
         :  m_state(INIT), m_mutex(), m_stateGuard(m_mutex), m_isRequestClose(false), m_workFunction(workFunction),
-          m_finishAction(finishAction)
+           m_finishAction(finishAction)
     {
         //std::cout << "start CloseableThread" << std::endl;
         Init();

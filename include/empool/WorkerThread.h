@@ -1,7 +1,5 @@
-
 #ifndef ZHANMM_WORKER_THREAD_H_
 #define ZHANMM_WORKER_THREAD_H_
-
 
 #include "TaskQueueBase.h"
 #include "ConditionVariable.h"
