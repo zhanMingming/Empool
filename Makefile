@@ -7,7 +7,7 @@ CXXFLAGS += -fPIC
 LIB_SUFFIX := .so
 endif
 
-CXXFLAGS += -Wall -Werror
+CXXFLAGS += -Wall 
 CXXFLAGS += -I ./include/empool
 
 LDFLAGS += -pthread
