@@ -1,3 +1,4 @@
+[中文版](https://github.com/zhanMingming/Empool/blob/master/README_CN.md)
 ## I.Introduction
 Empool is a thread pool management library, which can create four different types of thread pools.
 
